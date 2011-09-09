@@ -615,7 +615,7 @@ uses
 {$IFDEF USE_EwbDDE}
   EwbDDE,
 {$ENDIF}
-  Registry, CommCtrl, ComObj, ShellAPI, OleServer, IEConst, WinInet;
+  Registry, CommCtrl, ComObj, ShellAPI, OleServer, EWB.IEConst, WinInet;
 
 var
   // Boolean variables that must be global to restore settings for MDI cases

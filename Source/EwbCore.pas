@@ -45,7 +45,7 @@ interface
 uses
 {$IFDEF DELPHI6_UP}Variants, {$ENDIF}
   Dialogs, Windows, Messages, Classes, MSHTML_EWB, EWBAcc, Controls, Forms,
-  ExtCtrls, ActiveX, ShlObj, SHDocVw_EWB, UrlMon, IEConst;
+  ExtCtrls, ActiveX, ShlObj, SHDocVw_EWB, UrlMon, EWB.IEConst;
 
 type
   TCustomEmbeddedWB = class;
@@ -975,7 +975,7 @@ function TCustomEmbeddedWB.GetZoom: Integer;
 var
   vaIn, vaOut: OleVariant;
 begin
-  vaIn := NULL;
+  vaIn := Variants.NULL;
   InvokeCommand(nil, OLECMDID_ZOOM, OLECMDEXECOPT_DONTPROMPTUSER, vaIn, vaOut);
   Result := vaOut;
 end;

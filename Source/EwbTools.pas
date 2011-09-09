@@ -323,7 +323,7 @@ implementation
 
 uses
   Registry, ShellAPI, Controls, Messages, Forms, SysUtils,
-  OleCtrls, WinInet, SendMail_For_EWB, ComObj, IEConst, IniFiles, JPEG, WinSock,
+  OleCtrls, WinInet, SendMail_For_EWB, ComObj, EWB.IEConst, IniFiles, JPEG, WinSock,
   Wcrypt2, Browse4Folder, EWBCoreTools;
 
 type
@@ -1211,7 +1211,7 @@ begin
   try
     saBound.lLbound := 0;
     saBound.cElements := 2;
-    psaHeadFoot := SafeArrayCreate(VT_VARIANT, 1, saBound);
+    psaHeadFoot := SafeArrayCreate(VT_VARIANT, 1, @saBound);
     vHeadStr.vt := VT_BSTR;
     vHeadStr.bstrVal := SysAllocString(Header);
     vFootStr.vt := VT_BSTR;

@@ -145,7 +145,7 @@ type
 implementation
 
 uses
-  Windows, SysUtils, {$IFDEF DELPHI5}EwbCoreTools, {$ENDIF}Registry, Forms, IEConst;
+  Windows, SysUtils, {$IFDEF DELPHI5}EwbCoreTools, {$ENDIF}Registry, Forms, EWB.IEConst;
 
 constructor TExportFavorite.Create;
 begin

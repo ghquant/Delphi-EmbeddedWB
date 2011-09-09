@@ -179,7 +179,7 @@ type
 implementation
 
 uses
-  ShellAPI, SysUtils, ActiveX, Registry, ShlObj, ComObj, IEConst;
+  ShellAPI, SysUtils, ActiveX, Registry, ShlObj, ComObj, EWB.IEConst;
 
 // ExtensionAssociate===========================================================
 

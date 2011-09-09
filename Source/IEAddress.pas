@@ -386,7 +386,7 @@ type
 implementation
 
 uses
-  ComObj, UrlMon, ImgList, ShellAPI, Forms, SysUtils, Registry, IEConst, EwbCoreTools;
+  ComObj, UrlMon, ImgList, ShellAPI, Forms, SysUtils, Registry, EWB.IEConst, EwbCoreTools;
 
 function TEnumString.Clone(out enm: IEnumString): HResult;
 begin
@@ -503,6 +503,8 @@ begin
 end;
 
 function GetSpecialFolderNo(bUrl: WideString): Cardinal;
+const
+  CSIDL_PROFILES = $3E;
 var
   Url: string;
 begin
@@ -1823,7 +1825,7 @@ begin
             if FListIndex >= 24 then
               Exit;
             PostMessage(Handle, CB_SETCURSEL, (FListIndex + 1), 0);
-            PostMessage(EditHandle, EM_SETSEL, -1, 0);
+            PostMessage(EditHandle, EM_SETSEL, WPARAM(-1), 0);
             FSelImageIndex := FImageIndex;
             FImageList.Draw(FCanvas, 4, 3, FSelImageIndex, True);
             if FNavOnSelected and Assigned(FEmbeddedWB) then
@@ -1838,7 +1840,7 @@ begin
           if FListIndex <= 0 then
             Exit;
           PostMessage(Handle, CB_SETCURSEL, (FListIndex - 1), 0);
-          PostMessage(EditHandle, EM_SETSEL, -1, 0);
+          PostMessage(EditHandle, EM_SETSEL, WPARAM(-1), 0);
           FSelImageIndex := FImageIndex;
           FImageList.Draw(FCanvas, 4, 3, FSelImageIndex, True);
           if FNavOnSelected and Assigned(FEmbeddedWB) then
@@ -1867,7 +1869,7 @@ begin
         Key := VK_CLEAR;
         PostMessage(Handle, CB_GETCURSEL, 0, 0);
       // PostMessage(EditHandle, EM_SETREADONLY, 1, 0);
-        PostMessage(EditHandle, EM_SETSEL, -1, 0);
+        PostMessage(EditHandle, EM_SETSEL, WPARAM(-1), 0);
         PostMessage(Handle, CB_SHOWDROPDOWN, 1, 0);
         if FNavOnSelected and Assigned(FEmbeddedWB) then
           FEmbeddedWB.Go(Text);
