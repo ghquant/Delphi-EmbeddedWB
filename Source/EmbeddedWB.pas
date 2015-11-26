@@ -177,6 +177,10 @@ type
     FFooter: string;
     FMargins: TMargins;
     FOrientation: TPrintOrientationOption;
+	FPreferredPaperFormat: string;
+    FPrintBackgroundImages: Boolean;
+    FAdjustToSize: Boolean;
+    FDisableHeadersAndFooters: Boolean;
     FMeasure: TMeasure;
     procedure SetHTMLHeader(const Value: Tstrings);
   public
@@ -189,6 +193,10 @@ type
     property HTMLHeader: TStrings read FHTMLHeader write SetHTMLHeader;
     property Footer: string read FFooter write FFooter;
     property Orientation: TPrintOrientationOption read FOrientation write FOrientation;
+	property PreferredPaperFormat: string read FPreferredPaperFormat write FPreferredPaperFormat;
+    property PrintBackgroundImages: Boolean read FPrintBackgroundImages write FPrintBackgroundImages;
+    property AdjustToSize: Boolean read FAdjustToSize write FAdjustToSize;
+    property DisableHeadersAndFooters: Boolean read FDisableHeadersAndFooters write FDisableHeadersAndFooters;
   end;
 
   {============================================================================}
@@ -1250,6 +1258,37 @@ begin
             SendDlgItemMessage(PopHandle, $0420, BM_CLICK, 0, 0)
           else
             SendDlgItemMessage(PopHandle, $0421, BM_CLICK, 0, 0);
+			
+		  // try to select preferred paper format
+          // (if it doesn't exists, the default selection won't be touched)
+          if FPrintOptions.FPreferredPaperFormat <> '' then
+          begin
+            PreferredPaperFormatIndex := SendDlgItemMessage(
+                                           PopHandle, $0471, CB_FINDSTRING, WParam(-1),
+                                           LParam(PChar(FPrintOptions.FPreferredPaperFormat)));
+
+            if PreferredPaperFormatIndex <> CB_ERR then
+              SendDlgItemMessage(PopHandle, $0471, CB_SETCURSEL, PreferredPaperFormatIndex, 0);
+          end;
+
+          // enable or disable the background image printing checkbox as acquired
+          if FPrintOptions.FPrintBackgroundImages then
+            CheckDlgButton(PopHandle, $0410, BST_CHECKED)
+          else
+            CheckDlgButton(PopHandle, $0410, BST_UNCHECKED);
+
+          // enable or disable the adjust to size checkbox as acquired
+          if FPrintOptions.FAdjustToSize then
+            CheckDlgButton(PopHandle, $0411, BST_CHECKED)
+          else
+            CheckDlgButton(PopHandle, $0411, BST_UNCHECKED);
+
+          // disable all header and footers by selecting
+          // the first element <none> if desired
+          if FPrintOptions.FDisableHeadersAndFooters then
+            for CtrlID := $1fe0 to $1fe5 do
+              SendDlgItemMessage(PopHandle, CtrlID, CB_SETCURSEL, 0, 0);
+
           SetDlgItemText(PopHandle, $1FD3, PChar(FPrintOptions.FHeader));
           SetDlgItemText(PopHandle, $1FD5, PChar(FPrintOptions.FFooter));
           SetDlgItemText(PopHandle, $0483, PChar(PrintMarginStr(FPrintOptions.FMargins.FLeft)));
