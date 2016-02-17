@@ -45,7 +45,7 @@ uses
   EwbEditors, AppWebUpdater, IEParser, ExportFavorites, FavoritesTree,
   IETravelLog,
   FavMenu, FavoritesListView, FavoritesPopup, HistoryMenu, HistoryListView,
-  ImportFavorites, LibXmlComps, LibXmlParser, LinksBar, RichEditBrowser,
+  ImportFavorites, EwbLibXmlComps, EwbLibXmlParser, LinksBar, RichEditBrowser,
   SecurityManager, SendMail_For_Ewb, UrlHistory, Edithost, EditDesigner,
   IEAddress, IEDownload, IEMultiDownload, EwbCore, EmbeddedWB,
   EwbControlComponent, IECache, Browse4Folder,
