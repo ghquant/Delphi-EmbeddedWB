@@ -39,7 +39,7 @@ interface
 {$I EWB.inc}
 
 uses
-  ActiveX, SysUtils, ShlObj, Windows, UrlMon, IEConst;
+  ActiveX, SysUtils, ShlObj, Windows, UrlMon, EWB.IEConst;
 
 type
   IObjectIdentity = interface

@@ -63,7 +63,7 @@ interface
 {$I EWB.inc}
 
 uses
-  EwbAcc, Windows, ActiveX, Classes{$IFDEF USE_OleCtrlsFix}, OleCtrlsFix{$ENDIF}, OleCtrls, OleServer, StdVCL{$IFDEF DELPHI6_UP}, Variants{$ENDIF};
+  EwbAcc, Windows, ActiveX, Classes{$IFDEF USE_OleCtrlsFix}, OleCtrlsFix{$ENDIF}, OleCtrls, OleServer, System.Win.StdVCL{$IFDEF DELPHI6_UP}, Variants{$ENDIF};
 
 // *********************************************************************//
 // GUIDS declared in the TypeLibrary. Following prefixes are used:
@@ -1552,7 +1552,7 @@ type
 
 implementation
 
-uses ComObj;
+uses System.Win.ComObj;
 
 var
   VarEmptyParam: OleVariant;

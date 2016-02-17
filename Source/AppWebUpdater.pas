@@ -41,7 +41,7 @@ interface
 {$I EWB.inc}
 
 uses
-  Controls, ActiveX, Windows, SysUtils, Classes, LibXmlParser, ComCtrls, UrlMon;
+  Controls, ActiveX, Windows, SysUtils, Classes, EwbLibXmlParser, ComCtrls, UrlMon;
 
 type
   TErrorMessage = (emCreateSubBackup, emFileCopyError, emXmlError, emFileNotExist, emCreateFolder,

@@ -43,8 +43,8 @@ interface
 {$I EWB.inc}
 
 uses
-{$IFDEF DELPHI6_UP}DesignEditors, DesignIntf, StrEdit{$ELSE}DsgnIntf{$ENDIF}
-  , Classes;
+DesignEditors, DesignIntf, StrEdit,
+   Classes;
 
 type
   TEwbCompEditor = class(TComponentEditor)
@@ -109,7 +109,7 @@ type
 implementation
 
 uses
-  Browse4Folder, TypInfo, ShellApi, Windows, Dialogs, SysUtils, IEConst, Forms, shlobj;
+  Browse4Folder, TypInfo, ShellApi, Windows, Dialogs, SysUtils, EWB.IEConst, Forms, shlobj;
 
 //--Verb Delphi menu------------------------------------------------------------
 

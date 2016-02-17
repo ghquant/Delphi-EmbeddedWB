@@ -46,7 +46,7 @@ interface
 {$I EWB.inc}
 
 uses
-  Activex, UrlMon, Windows, SysUtils, Classes, IEConst;
+  Activex, UrlMon, Windows, SysUtils, Classes, EWB.IEConst;
   
 const
   DefaultActions: array[0..24] of DWORD = (

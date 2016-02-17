@@ -1,37 +1,37 @@
-//***********************************************************
-//                       TEWBFocusControl unit              *
-//                                                          *
-//                     For Delphi 5 to XE                   *
-//                     Freeware Component                   *
-//                            by                            *
-//                          (smot)                          *
-//                                                          *
-//  Documentation and updated versions:                     *
-//                                                          *
-//               http://www.bsalsa.com                      *
-//***********************************************************
-{*******************************************************************************}
-{LICENSE:
-THIS SOFTWARE IS PROVIDED TO YOU "AS IS" WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESSED OR IMPLIED INCLUDING BUT NOT LIMITED TO THE APPLIED
-WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-YOU ASSUME THE ENTIRE RISK AS TO THE ACCURACY AND THE USE OF THE SOFTWARE
-AND ALL OTHER RISK ARISING OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE
-AND DOCUMENTATION. BSALSA PRODUCTIONS DOES NOT WARRANT THAT THE SOFTWARE IS ERROR-FREE
-OR WILL OPERATE WITHOUT INTERRUPTION. THE SOFTWARE IS NOT DESIGNED, INTENDED
-OR LICENSED FOR USE IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE CONTROLS,
-INCLUDING WITHOUT LIMITATION, THE DESIGN, CONSTRUCTION, MAINTENANCE OR
-OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS,
-AIR TRAFFIC CONTROL, AND LIFE SUPPORT OR WEAPONS SYSTEMS. BSALSA PRODUCTIONS SPECIFICALLY
-DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH PURPOSE.
+// ***********************************************************
+// TEWBFocusControl unit              *
+// *
+// For Delphi 5 to XE                   *
+// Freeware Component                   *
+// by                            *
+// (smot)                          *
+// *
+// Documentation and updated versions:                     *
+// *
+// http://www.bsalsa.com                      *
+// ***********************************************************
+{ ******************************************************************************* }
+{ LICENSE:
+  THIS SOFTWARE IS PROVIDED TO YOU "AS IS" WITHOUT WARRANTY OF ANY KIND,
+  EITHER EXPRESSED OR IMPLIED INCLUDING BUT NOT LIMITED TO THE APPLIED
+  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+  YOU ASSUME THE ENTIRE RISK AS TO THE ACCURACY AND THE USE OF THE SOFTWARE
+  AND ALL OTHER RISK ARISING OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE
+  AND DOCUMENTATION. BSALSA PRODUCTIONS DOES NOT WARRANT THAT THE SOFTWARE IS ERROR-FREE
+  OR WILL OPERATE WITHOUT INTERRUPTION. THE SOFTWARE IS NOT DESIGNED, INTENDED
+  OR LICENSED FOR USE IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE CONTROLS,
+  INCLUDING WITHOUT LIMITATION, THE DESIGN, CONSTRUCTION, MAINTENANCE OR
+  OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS,
+  AIR TRAFFIC CONTROL, AND LIFE SUPPORT OR WEAPONS SYSTEMS. BSALSA PRODUCTIONS SPECIFICALLY
+  DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH PURPOSE.
 
-You may use, change or modify the component under 4 conditions:
-1. In your website, add a link to "http://www.bsalsa.com"
-2. In your application, add credits to "Embedded Web Browser"
-3. Mail me  (bsalsa@gmail.com) any code change in the unit
-   for the benefit of the other users.
-4. Please, consider donation in our web site!
-{*******************************************************************************}
+  You may use, change or modify the component under 4 conditions:
+  1. In your website, add a link to "http://www.bsalsa.com"
+  2. In your application, add credits to "Embedded Web Browser"
+  3. Mail me  (bsalsa@gmail.com) any code change in the unit
+  for the benefit of the other users.
+  4. Please, consider donation in our web site!
+  {******************************************************************************* }
 
 unit EwbFocusControl;
 
@@ -110,27 +110,29 @@ begin
 end;
 
 class procedure TEWBFocusControl.Activate(Value: Boolean)
-  {: TEWBApplicationHook};
+{ : TEWBApplicationHook };
 const
 {$J+}
   Instance: TEWBFocusControl = nil;
 {$J-}
 begin
-  if EWBEnableFocusControl then
-    case Value of
-      True:
+  case Value of
+    True:
+      begin
+        if EWBEnableFocusControl then
         begin
           if not Assigned(Instance) then
             Instance := Create;
         end;
-      False:
-        begin
-          if Assigned(EWBAppHookInstance) then
-            FreeAndNil(EWBAppHookInstance);
-          if Assigned(Instance) then
-            FreeAndNil(Instance);
-        end;
-    end;
+      end;
+    False:
+      begin
+        if Assigned(EWBAppHookInstance) then
+          FreeAndNil(EWBAppHookInstance);
+        if Assigned(Instance) then
+          FreeAndNil(Instance);
+      end;
+  end;
 end;
 
 // -- TAppHookWindow -----------------------------------------------------------
@@ -140,33 +142,40 @@ var
   ActiveControl: TWinControl;
   ActiveForm: TCustomForm;
   bContinue: Boolean;
-//  s: string;
+  // s: string;
 begin
   Result := False;
-  if (Msg.Msg = WM_WINDOWPOSCHANGING) or (Msg.Msg = CM_ACTIVATE) then
+  if EWBEnableFocusControl then
   begin
-    ActiveForm := Screen.ActiveForm;
-    if Assigned(ActiveForm) then
-    begin
-      if Screen.ActiveForm.FormStyle = fsMDIChild then // Check if MDI
-        bContinue := IsChild(GetActiveWindow, ActiveForm.Handle)
-      else
-        bContinue :=  not Forms.Application.Terminated and ActiveForm.HandleAllocated and
-          (ActiveForm.Handle = GetActiveWindow);
 
-      if bContinue and (ActiveForm.CanFocus) then
+    if (Msg.Msg = WM_WINDOWPOSCHANGING) or (Msg.Msg = CM_ACTIVATE) then
+    begin
+      ActiveForm := Screen.ActiveForm;
+      if Assigned(ActiveForm) then
       begin
-        ActiveControl := ActiveForm.ActiveControl;
-       // s := '** MessageHook ' + ActiveControl.ClassName + ' ' + Inttostr(ActiveForm.Handle) + ' ' +  Inttostr(GetFocus);
-      //  OutputDebugString(PChar(s));
-        if Assigned(ActiveControl) and ((ActiveControl.ClassName = 'TEmbeddedWB') or
-          (ActiveControl.ClassName = 'TEWBCore')) then
-          if GetFocus <> ActiveControl.Handle then
-          begin
-            PostMessage(ActiveControl.Handle, WM_SETWBFOCUS, Integer(ActiveControl), 0);
-             //  OutputDebugString(PChar('Focus set'));
-             //  ActiveControl.SetFocus doesn't work when switching between forms.
-          end;
+        if Screen.ActiveForm.FormStyle = fsMDIChild then // Check if MDI
+          bContinue := IsChild(GetActiveWindow, ActiveForm.Handle)
+        else
+          bContinue := not Forms.Application.Terminated and
+            ActiveForm.HandleAllocated and
+            (ActiveForm.Handle = GetActiveWindow);
+
+        if bContinue and (ActiveForm.CanFocus) then
+        begin
+          ActiveControl := ActiveForm.ActiveControl;
+          // s := '** MessageHook ' + ActiveControl.ClassName + ' ' + Inttostr(ActiveForm.Handle) + ' ' +  Inttostr(GetFocus);
+          // OutputDebugString(PChar(s));
+          if Assigned(ActiveControl) and
+            ((ActiveControl.ClassName = 'TEmbeddedWB') or
+            (ActiveControl.ClassName = 'TEWBCore')) then
+            if GetFocus <> ActiveControl.Handle then
+            begin
+              PostMessage(ActiveControl.Handle, WM_SETWBFOCUS,
+                Integer(ActiveControl), 0);
+              // OutputDebugString(PChar('Focus set'));
+              // ActiveControl.SetFocus doesn't work when switching between forms.
+            end;
+        end;
       end;
     end;
   end;
@@ -174,8 +183,11 @@ end;
 
 destructor TAppHookWindow.Destroy;
 begin
-  inherited;
-  Deactivate;
+  try
+    Deactivate;
+  finally
+    inherited;
+  end;
 end;
 
 procedure TAppHookWindow.Activate;
@@ -190,7 +202,7 @@ end;
 
 procedure TAppHookWindow.Deactivate;
 begin
-  if Assigned(Application) then
+  if Assigned(Application) and (FHookSet) then
   begin
     Application.UnHookMainWindow(MessageHook);
     FHookSet := False;
