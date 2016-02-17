@@ -1,0 +1,7 @@
+/Packages/*.identcache
+/Packages/*.res
+/Packages/*.stat
+/Packages/*.~dsk
+/Packages/*.dproj
+/Packages/*.local
+/Packages/*.dsk
