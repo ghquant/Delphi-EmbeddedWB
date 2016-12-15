@@ -163,7 +163,7 @@ begin
           (ActiveControl.ClassName = 'TEWBCore')) then
           if GetFocus <> ActiveControl.Handle then
           begin
-            PostMessage(ActiveControl.Handle, WM_SETWBFOCUS, Integer(ActiveControl), 0);
+            PostMessage(ActiveControl.Handle, WM_SETWBFOCUS, NativeInt(ActiveControl), 0);
              //  OutputDebugString(PChar('Focus set'));
              //  ActiveControl.SetFocus doesn't work when switching between forms.
           end;
