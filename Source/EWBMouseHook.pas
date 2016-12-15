@@ -45,9 +45,9 @@ uses
 // -- TEWBMouseHook ------------------------------------------------------------
 
 type
-  TFNMouseProc = function(nCode: Integer; wp: WPARAM; lp: WParam): LRESULT
+  TFNMouseProc = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
     stdcall;
-  TFNMouseMethod = function(nCode: Integer; wp: WPARAM; lp: WParam): LRESULT
+  TFNMouseMethod = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
     stdcall of object;
   TMouseWheelEvent = procedure(Point: TPoint; hwndFromPoint: HWND; lp: LPARAM;
     var Handled: Boolean) of object;

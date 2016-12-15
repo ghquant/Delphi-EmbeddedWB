@@ -31,6 +31,6 @@ uses
 implementation
 
 initialization
-  EWBEnableMouseWheelFix := False;
+  //EWBEnableMouseWheelFix := False;
 
 end.

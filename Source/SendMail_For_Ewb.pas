@@ -99,7 +99,7 @@ uses
 {$IFDEF UNICODE}
   AnsiStrings,
 {$ENDIF UNICODE}
-  Windows, SysUtils, Registry, Forms;
+  Windows, SysUtils, System.Win.Registry, Forms;
 
 function MAPIErrorDescription(intErrorCode: Integer): string;
 begin
@@ -212,21 +212,21 @@ var
         Result := MapiResolveName(0, 0, PAnsiChar(strRecipient), MAPI_DIALOG, 0,
           lpRecip);
 
-      StrCopy(PAnsiChar(new(TlpszRecipName)), lpRecip^.lpszName);
+      {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrCopy(PAnsiChar(new(TlpszRecipName)), lpRecip^.lpszName);
 
       if Result = SUCCESS_SUCCESS then
       begin
-        strRecipient := StrPas(lpRecip^.lpszName);
+        strRecipient := {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrPas(lpRecip^.lpszName);
         with lpRecipArray^[i] do
         begin
           if lpRecip^.lpszAddress = nil then
           begin
-            lpszAddress := StrCopy(new(TlpszRecipName)^,
+            lpszAddress := {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrCopy(new(TlpszRecipName)^,
               lpRecip^.lpszName);
           end
           else
           begin
-            lpszAddress := StrCopy(new(TlpszRecipName)^,
+            lpszAddress := {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrCopy(new(TlpszRecipName)^,
               lpRecip^.lpszAddress);
           end;
           ulEIDSize := lpRecip^.ulEIDSize;
@@ -310,22 +310,26 @@ begin
       lpAttachArray := TlpAttachArray(StrAlloc(nFileCount *
         SizeOf(TMapiFileDesc)));
 {$ENDIF UNICODE}
-      FillChar(lpAttachArray^, StrBufSize(PAnsiChar(lpAttachArray)), 0);
+      FillChar(lpAttachArray^, {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrBufSize(PAnsiChar(lpAttachArray)), 0);
       for i := 0 to nFileCount - 1 do
       begin
         lpAttachArray^[i].nPosition := Cardinal(-1);
               //Cardinal($FFFFFFFF); //ULONG(-1);
-        lpAttachArray^[i].lpszPathName := StrPCopy(new(TlpszPathname)^,
+        lpAttachArray^[i].lpszPathName :=
+          {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
+           StrPCopy(new(TlpszPathname)^,
           AnsiString(Attachments[i]));
         if i < AttachmentNames.Count then
         begin
           lpAttachArray^[i].lpszFileName :=
+          {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
             StrPCopy(new(TlpszFileName)^,
             AnsiString(AttachmentNames[i]))
         end
         else
         begin
           lpAttachArray^[i].lpszFileName :=
+          {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
             StrPCopy(new(TlpszFileName)^,
             AnsiString(ExtractFileName(Attachments[i])));
         end;
@@ -345,7 +349,11 @@ begin
     lpRecipArray := TlpRecipArray(StrAlloc(Recipients.Count *
       SizeOf(TMapiRecipDesc)));
 {$ENDIF UNICODE}
-    FillChar(lpRecipArray^, StrBufSize(PAnsiChar(lpRecipArray)), 0);
+
+
+    FillChar(lpRecipArray^, {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
+          StrBufSize(PAnsiChar(lpRecipArray)), 0);
+
     for i := 0 to Recipients.Count - 1 do
     begin
       s := AnsiString(Recipients[i]);
@@ -366,9 +374,13 @@ begin
         CheckRecipient(s)
       else
       begin
-        lpRecipArray^[i].lpszName := StrCopy(new(TlpszRecipName)^,
+        lpRecipArray^[i].lpszName :=
+          {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
+          StrCopy(new(TlpszRecipName)^,
           PAnsiChar(s));
-        lpRecipArray^[i].lpszAddress := StrCopy(new(TlpszRecipName)^,
+        lpRecipArray^[i].lpszAddress :=
+        {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}
+          StrCopy(new(TlpszRecipName)^,
           PAnsiChar(s));
       end;
     end;
@@ -387,7 +399,7 @@ begin
       Dispose(lpAttachArray^[i].lpszPathname);
       Dispose(lpAttachArray^[i].lpszFileName);
     end;
-    StrDispose(PAnsiChar(lpAttachArray));
+    {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrDispose(PAnsiChar(lpAttachArray));
   end;
 
   if Assigned(Recipients) and (Recipients.Count > 0) then
@@ -400,7 +412,7 @@ begin
       if Assigned(lpRecipArray^[i].lpszAddress) then
         Dispose(lpRecipArray^[i].lpszAddress);
     end;
-    StrDispose(PAnsiChar(lpRecipArray));
+    {$ifdef DELPHIXE3_UP}AnsiStrings.{$endif}StrDispose(PAnsiChar(lpRecipArray));
   end;
 
   if intMAPISession <> 0 then

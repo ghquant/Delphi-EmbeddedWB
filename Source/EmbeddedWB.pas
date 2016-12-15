@@ -615,7 +615,7 @@ uses
 {$IFDEF USE_EwbDDE}
   EwbDDE,
 {$ENDIF}
-  Registry, CommCtrl, ComObj, ShellAPI, OleServer, IEConst, WinInet;
+  System.Win.Registry, CommCtrl, System.Win.ComObj, ShellAPI, OleServer, EWB.IEConst, WinInet;
 
 var
   // Boolean variables that must be global to restore settings for MDI cases
@@ -2600,7 +2600,9 @@ begin
       begin
         FUserAgentInt := FUserAgent;
         Control.OnAmbientPropertyChange(DISPID_AMBIENT_USERAGENT);
+        {$IFNDEF DELPHIX_SEATTLE_UP }
         _Release;
+        {$ENDIF}
       end;
   end;
 end;

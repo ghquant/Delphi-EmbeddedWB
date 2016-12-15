@@ -44,7 +44,7 @@ interface
 
 uses
 {$IFDEF DELPHI6_UP}Variants, {$ENDIF}
-  Windows, Classes, ActiveX, Mshtml_Ewb, EwbAcc, EwbClasses, EwbEvents;
+  Windows, Classes, ActiveX, Mshtml_Ewb, EwbClasses, EwbEvents;
 
 type
   THtmlListener = class;
@@ -224,7 +224,7 @@ type
 implementation
 
 uses
-  SysUtils, EwbCoreTools;
+  SysUtils;
 
 const
   _eventids: array[TEventEnum] of TEventID = (

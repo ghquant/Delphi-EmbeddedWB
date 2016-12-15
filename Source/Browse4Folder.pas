@@ -92,7 +92,7 @@ type
 implementation
 
 uses
-  TypInfo, Registry, Forms, ComObj;
+  TypInfo, System.Win.Registry, Forms;
 
 var
   lg_StartFolder: string;

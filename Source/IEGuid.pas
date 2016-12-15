@@ -45,7 +45,7 @@ unit IEGuid;
 interface
 
 uses
-  Mshtml_Ewb, Clipbrd, Comobj, Activex, Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs;
+  Clipbrd, Comobj, Activex, Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs;
 
 type
 
