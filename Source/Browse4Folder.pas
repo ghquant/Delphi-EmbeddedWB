@@ -183,7 +183,7 @@ var
 begin
   if uMsg = BFFM_INITIALIZED then
   begin
-    SendMessage(Wnd, BFFM_SETSELECTION, 1, Integer(@lg_StartFolder[1]));
+    SendMessage(Wnd, BFFM_SETSELECTION, 1, NativeInt(@lg_StartFolder[1]));
 {$IFDEF DELPHI7_UP}
     wa := Screen.WorkAreaRect;
     GetWindowRect(Wnd, Rect);

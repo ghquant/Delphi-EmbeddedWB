@@ -1909,7 +1909,7 @@ begin
       if (p.Msg = WM_LBUTTONDOWN) then
       begin
         try
-          SendMessage(Handle, EM_EXSETSEL, 0, Longint(@(p.chrg)));
+          SendMessage(Handle, EM_EXSETSEL, 0, NativeInt(@(p.chrg)));
           sURL := SelText;
           DoURLClick(sURL);
         except
