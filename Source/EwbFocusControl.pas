@@ -153,29 +153,19 @@ begin
       ActiveForm := Screen.ActiveForm;
       if Assigned(ActiveForm) then
       begin
-        if Screen.ActiveForm.FormStyle = fsMDIChild then // Check if MDI
-          bContinue := IsChild(GetActiveWindow, ActiveForm.Handle)
-        else
-          bContinue := not Forms.Application.Terminated and
-            ActiveForm.HandleAllocated and
-            (ActiveForm.Handle = GetActiveWindow);
 
-        if bContinue and (ActiveForm.CanFocus) then
-        begin
-          ActiveControl := ActiveForm.ActiveControl;
-          // s := '** MessageHook ' + ActiveControl.ClassName + ' ' + Inttostr(ActiveForm.Handle) + ' ' +  Inttostr(GetFocus);
-          // OutputDebugString(PChar(s));
-          if Assigned(ActiveControl) and
-            ((ActiveControl.ClassName = 'TEmbeddedWB') or
-            (ActiveControl.ClassName = 'TEWBCore')) then
-            if GetFocus <> ActiveControl.Handle then
-            begin
-              PostMessage(ActiveControl.Handle, WM_SETWBFOCUS,
-                Integer(ActiveControl), 0);
-              // OutputDebugString(PChar('Focus set'));
-              // ActiveControl.SetFocus doesn't work when switching between forms.
-            end;
-        end;
+        ActiveControl := ActiveForm.ActiveControl;
+       // s := '** MessageHook ' + ActiveControl.ClassName + ' ' + Inttostr(ActiveForm.Handle) + ' ' +  Inttostr(GetFocus);
+      //  OutputDebugString(PChar(s));
+        if Assigned(ActiveControl) and ((ActiveControl.ClassName = 'TEmbeddedWB') or
+          (ActiveControl.ClassName = 'TEWBCore')) then
+          if GetFocus <> ActiveControl.Handle then
+          begin
+            PostMessage(ActiveControl.Handle, WM_SETWBFOCUS, NativeInt(ActiveControl), 0);
+             //  OutputDebugString(PChar('Focus set'));
+             //  ActiveControl.SetFocus doesn't work when switching between forms.
+          end;
+
       end;
     end;
   end;
