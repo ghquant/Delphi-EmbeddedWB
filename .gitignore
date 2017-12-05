@@ -80,3 +80,4 @@ __recovery/
 ehthumbs.db
 Thumbs.db
 
+/Packages/*.dproj
