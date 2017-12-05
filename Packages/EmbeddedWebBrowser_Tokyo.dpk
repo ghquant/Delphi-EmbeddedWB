@@ -31,7 +31,7 @@ You may use, change or modify the component under 4 conditions:
 4. Please, consider donation in our web site!  
 {*******************************************************************************}
 
-package EmbeddedWebBrowser_Berlin;
+package EmbeddedWebBrowser_Tokyo;
 {$R *.res}
 {$R 'EWB.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
