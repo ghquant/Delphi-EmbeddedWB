@@ -1,4 +1,4 @@
-//***********************************************************
+﻿//***********************************************************
 //                        TEditDesigner                     *
 //                                                          *
 //                       For Delphi                         *
@@ -47,7 +47,7 @@ interface
 {$I EWB.inc}
 
 uses
-{$IFDEF USE_Extras}EwbAcc, Graphics, {$ENDIF}
+{$IFDEF USE_Extras}Graphics, {$ENDIF}
   EmbeddedWB, ActiveX, MSHTML_EWB, Classes, Windows;
 
 const

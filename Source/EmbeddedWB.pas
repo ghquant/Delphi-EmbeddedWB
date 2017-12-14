@@ -615,7 +615,7 @@ uses
 {$IFDEF USE_EwbDDE}
   EwbDDE,
 {$ENDIF}
-  Registry, CommCtrl, ComObj, ShellAPI, OleServer, IEConst, WinInet;
+  System.Win.Registry, CommCtrl, System.Win.ComObj, ShellAPI, OleServer, EWB.IEConst, WinInet;
 
 var
   // Boolean variables that must be global to restore settings for MDI cases
@@ -1105,7 +1105,7 @@ procedure TEmbeddedWB.UnHookChildWindows;
 begin
   if FSysListViewHandle <> 0 then
   begin
-    SetWindowLongW(FSysListViewHandle, GWL_WNDPROC, Integer(FDefSysListViewObjProc));
+    SetWindowLongW(FSysListViewHandle, GWL_WNDPROC, NativeInt(FDefSysListViewObjProc));
 {$IFDEF DELPHI6_UP}Classes.{$ENDIF}FreeObjectInstance(FSysListViewObjInstance);
     FSysListViewHandle := 0;
     FSysListViewObjInstance := nil;
@@ -1113,7 +1113,7 @@ begin
 
   if FShellDocObjViewHandle <> 0 then
   begin
-    SetWindowLongW(FShellDocObjViewHandle, GWL_WNDPROC, Integer(FDefShellObjViewProc));
+    SetWindowLongW(FShellDocObjViewHandle, GWL_WNDPROC, NativeInt(FDefShellObjViewProc));
 {$IFDEF DELPHI6_UP}Classes.{$ENDIF}FreeObjectInstance(FShellDocObjInstance);
     FShellDocObjViewHandle := 0;
     FShellDocObjInstance := nil;
@@ -1121,7 +1121,7 @@ begin
 
   if FInetExplorerServerHandle <> 0 then
   begin
-    SetWindowLongW(FInetExplorerServerHandle, GWL_WNDPROC, Integer(FDefInetExplorerServerProc));
+    SetWindowLongW(FInetExplorerServerHandle, GWL_WNDPROC, NativeInt(FDefInetExplorerServerProc));
 {$IFDEF DELPHI6_UP}Classes.{$ENDIF}FreeObjectInstance(FInetExplorerServerInstance);
     FInetExplorerServerHandle := 0;
     FInetExplorerServerInstance := nil;
@@ -2600,7 +2600,9 @@ begin
       begin
         FUserAgentInt := FUserAgent;
         Control.OnAmbientPropertyChange(DISPID_AMBIENT_USERAGENT);
+        {$IFNDEF DELPHIX_SEATTLE_UP }
         _Release;
+        {$ENDIF}
       end;
   end;
 end;

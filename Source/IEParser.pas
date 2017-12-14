@@ -272,7 +272,7 @@ type
 implementation
 
 uses
-  IEConst, IEDownloadStrings, IEDownloadTools, SysUtils, IeDownloadAcc, UrlMon, WinInet;
+  EWB.IEConst, IEDownloadStrings, IEDownloadTools, SysUtils, IeDownloadAcc, UrlMon, WinInet;
 
 
 function TIEParser.GetContainer(out container: IOleContainer): HRESULT;

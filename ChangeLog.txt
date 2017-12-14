@@ -9,6 +9,18 @@ EmbeddedWB Component Pack
 [^] Improved/Updated
 
 =============================================================
+Version 14.71.0  - 17.02.2016 - by littleearth
+=============================================================
+
+* Delphi Seattle support
+  [^] EWB_jedi.inc (compiler directives)
+  
+* IDE crash if EWBEnableFocusControl is set to false.
+
+* Interface reference leak changes in Seattle
+ - https://marc.durdin.net/2012/07/understanding-and-correcting-interface-reference-leaks-in-delphis-vcl-olectrls-pas/
+
+=============================================================
 Version 14.70.0  - 02.10.2010 - by smot
 =============================================================
 

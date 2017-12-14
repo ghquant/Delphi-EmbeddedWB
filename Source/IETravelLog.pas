@@ -42,7 +42,7 @@ interface
 {$I EWB.inc}
 
 uses
-  Activex, Windows, Classes, EmbeddedWB, IEConst, EwbAcc;
+  Activex, Windows, Classes, EmbeddedWB, EWB.IEConst, EwbAcc;
 
 type
   TOnEntryEvent = procedure(Title, Url: WideString; var Cancel: Boolean) of object;

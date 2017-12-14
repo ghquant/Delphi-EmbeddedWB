@@ -38,6 +38,8 @@ unit MenuContext;
 
 interface
 
+{$I EWB.inc}
+
 uses
   Windows, Classes, ShlObj, ActiveX;
 
@@ -416,7 +418,9 @@ begin
     FreeMem(ItemPIDLs);
   end;
   ShellMalloc.Free(FolderID);
+  {$IFNDEF DELPHIX_SEATTLE_UP }
   ShellMalloc._Release;
+  {$ENDIF}
 end;
 
 function NextPIDL(PIDL: PItemIDList): PItemIDList;
