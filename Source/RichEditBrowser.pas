@@ -1450,7 +1450,7 @@ var
   // R, R1: TRect;
 begin
   DC := GetDC(Handle);
-  if Transparent = 1 then
+  if Transparent = true then
     SetBkMode(DC, Windows.Transparent)
   else
     SetBkMode(DC, Windows.OPAQUE);
