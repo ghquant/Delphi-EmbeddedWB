@@ -38,7 +38,7 @@ unit EwbDDE;
 interface
 
 uses
-  Windows, Classes, ShellAPI, EWBAcc, Registry, EwbTools, ShlObj, IEConst,
+  Windows, Classes, ShellAPI, EWBAcc, Registry, EwbTools, ShlObj, EWB.IEConst,
   sysUtils, ActiveX, ComObj;
 
 type
@@ -56,8 +56,7 @@ procedure DisposePIDL(ID: PItemIDList);
 
 implementation
 
-uses
-  EwbCoreTools;
+
 
 var
   FindFolder, OpenFolder, ExploreFolder, HtmlFileApp, HtmlFileTopic: string;

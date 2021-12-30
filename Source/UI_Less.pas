@@ -87,7 +87,7 @@ type
 implementation
 
 uses
-  IEConst;
+  EWB.IEConst;
 
 var
   Doc: IhtmlDocument2;

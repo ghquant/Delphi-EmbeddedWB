@@ -38,6 +38,8 @@ unit MenuContext;
 
 interface
 
+{$I EWB.inc}
+
 uses
   Windows, Classes, ShlObj, ActiveX;
 
@@ -93,12 +95,12 @@ begin
         if IsCM3 then
         begin
           CM3 := IContextMenu3(PCreateStruct(lParam).lpCreateParams);
-          SetWindowLong(Wnd, GWL_USERDATA, LongInt(CM3));
+          SetWindowLong(Wnd, GWL_USERDATA, NativeInt(CM3));
         end
         else
         begin
           CM2 := IContextMenu2(PCreateStruct(lParam).lpCreateParams);
-          SetWindowLong(Wnd, GWL_USERDATA, LongInt(CM2));
+          SetWindowLong(Wnd, GWL_USERDATA, NativeInt(CM2));
         end;
         Result := DefWindowProc(Wnd, Msg, wParam, lParam);
       end;
@@ -416,7 +418,9 @@ begin
     FreeMem(ItemPIDLs);
   end;
   ShellMalloc.Free(FolderID);
+  {$IFNDEF DELPHIX_SEATTLE_UP }
   ShellMalloc._Release;
+  {$ENDIF}
 end;
 
 function NextPIDL(PIDL: PItemIDList): PItemIDList;

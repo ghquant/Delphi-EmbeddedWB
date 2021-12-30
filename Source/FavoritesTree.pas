@@ -43,7 +43,7 @@ interface
 {$I EWB.inc}
 
 uses
-  ShlObj, Messages, Windows, SysUtils, Classes, Forms, ComCtrls, DIRMonitor,
+  ShlObj, Messages, Windows, SysUtils, Classes, Forms, ComCtrls,
   iniFiles, EmbeddedWB, EwbCore, Controls, Imglist,
   ExportFavorites, ImportFavorites, EwbAcc, EWBTools;
 

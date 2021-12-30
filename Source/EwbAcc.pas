@@ -39,7 +39,7 @@ interface
 {$I EWB.inc}
 
 uses
-  ActiveX, SysUtils, ShlObj, Windows, UrlMon, IEConst;
+  ActiveX, SysUtils, ShlObj, Windows, UrlMon, EWB.IEConst;
 
 type
   IObjectIdentity = interface
@@ -747,7 +747,7 @@ var
 function CoInternetSetFeatureEnabled(aFeature: TInternetFeature;
   dwFlags: DWORD; fEnable: Boolean): HRESULT;
 begin
-  if (Integer(CoInternetSetFeatureEnabledPtr) > 1) or
+  if (NativeInt(CoInternetSetFeatureEnabledPtr) > 1) or
     CheckURLMonModuleFunc('CoInternetSetFeatureEnabled',
     CoInternetSetFeatureEnabledPtr) then
     Result := TCoInternetSetFeatureEnabled(CoInternetSetFeatureEnabledPtr)(
@@ -759,7 +759,7 @@ end;
 function CoInternetIsFeatureEnabled(aFeature: TInternetFeature;
   dwFlags: DWORD): HRESULT;
 begin
-  if (Integer(CoInternetIsFeatureEnablePtr) > 1) or
+  if (NativeInt(CoInternetIsFeatureEnablePtr) > 1) or
     CheckURLMonModuleFunc('CoInternetIsFeatureEnabled',
     CoInternetIsFeatureEnablePtr) then
     Result := TCoInternetIsFeatureEnabled(CoInternetIsFeatureEnablePtr)(
@@ -771,7 +771,7 @@ end;
 function CoInternetIsFeatureEnabledForUrl(aFeature: TInternetFeature;
   dwFlags: DWORD; szUrl: LPCWSTR; pSecMgr: IInternetSecurityManager): HRESULT;
 begin
-  if (Integer(CoInternetIsFeatureEnabledForUrlPtr) > 1) or
+  if (NativeInt(CoInternetIsFeatureEnabledForUrlPtr) > 1) or
     CheckURLMonModuleFunc('CoInternetIsFeatureEnabledForUrl',
     CoInternetIsFeatureEnabledForUrlPtr) then
     Result :=
@@ -786,7 +786,7 @@ function CoInternetIsFeatureZoneElevationEnabled(
   szFromURL, szToURL: LPCWSTR; pSecMgr: IInternetSecurityManager;
   dwFlags: DWORD): HRESULT;
 begin
-  if (Integer(CoInternetIsFeatureZoneElevationEnabledPtr) > 1) or
+  if (NativeInt(CoInternetIsFeatureZoneElevationEnabledPtr) > 1) or
     CheckURLMonModuleFunc('CoInternetIsFeatureZoneElevationEnabled',
     CoInternetIsFeatureZoneElevationEnabledPtr) then
     Result :=

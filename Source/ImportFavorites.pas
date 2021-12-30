@@ -144,7 +144,7 @@ type
 implementation
 
 uses
-  IEConst, EwbCoreTools;
+  EWB.IEConst;
 
 constructor TImportFavorite.Create;
 begin

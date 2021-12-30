@@ -44,7 +44,7 @@ interface
 
 uses
 {$IFDEF DELPHI6_UP}Variants, {$ENDIF}
-  Windows, Classes, Graphics, ActiveX, Mshtml_Ewb, EwbAcc, EwbClasses, EwbEvents,
+  Windows, Classes, Graphics, ActiveX, Mshtml_Ewb, EwbClasses, EwbEvents,
   EwbEventsComp;
 
 type

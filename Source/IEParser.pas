@@ -272,7 +272,7 @@ type
 implementation
 
 uses
-  IEConst, IEDownloadStrings, IEDownloadTools, SysUtils, IeDownloadAcc, UrlMon, WinInet;
+  EWB.IEConst, IEDownloadStrings, IEDownloadTools, SysUtils, IeDownloadAcc, UrlMon, WinInet;
 
 
 function TIEParser.GetContainer(out container: IOleContainer): HRESULT;
@@ -626,7 +626,7 @@ begin
     Doc := nil;
   if Assigned(All) then
     All := nil;
-  FreeAndNil(Element);
+  //FreeAndNil(Element);
   FUrl := EmptyStr;
   FBusy := False;
   Finalize;

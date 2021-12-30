@@ -45,9 +45,9 @@ uses
 // -- TEWBMouseHook ------------------------------------------------------------
 
 type
-  TFNMouseProc = function(nCode: Integer; wp: WPARAM; lp: WParam): LRESULT
+  TFNMouseProc = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
     stdcall;
-  TFNMouseMethod = function(nCode: Integer; wp: WPARAM; lp: WParam): LRESULT
+  TFNMouseMethod = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
     stdcall of object;
   TMouseWheelEvent = procedure(Point: TPoint; hwndFromPoint: HWND; lp: LPARAM;
     var Handled: Boolean) of object;
@@ -93,6 +93,26 @@ var
   //  MakeStdcallCallback (thunk to use stdcall method as static callback)
 
 function MakeStdcallCallback(const Method: TMethod): Pointer;
+{$IFDEF WIN64}
+var
+  P: PByte;
+begin
+  Result := VirtualAlloc(nil, $100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+  if Assigned(Result) then
+  begin
+    P := Result;
+    PDWORD(P)^ := $4D905141; Inc(P, 4);
+    PDWORD(P)^ := $8949C189; Inc(P, 4);
+    PDWORD(P)^ := $CA8948D0; Inc(P, 4);
+    PWORD(P)^ := $B948; Inc(P, 2);
+    PPointer(P)^ := Method.Data; Inc(P, 8);
+    PWORD(P)^ := $B848; Inc(P, 2);
+    PPointer(P)^ := Method.Code; Inc(P, 8);
+    PDWORD(P)^ := $4190D0FF; Inc(P, 4);
+    PWORD(P)^ := $C359;
+  end;
+end;
+{$ELSE}
 type
   PCallbackCode = ^TCallbackCode;
   TCallbackCode = packed record
@@ -120,6 +140,7 @@ begin
     Result := nil;
   end;
 end;
+{$ENDIF}
 
 procedure FreeCallback(Callback: Pointer);
 begin

@@ -1,40 +1,40 @@
-//*****************************************************************
-//                      Rich Edit for Web Browser                 *
-//                                                                *
-//                     For Delphi 5 to XE                         *
-//                     Freeware Component                         *
-//                            by                                  *
-//                     Eran Bodankin (bsalsa)                     *
-//                       bsalsa@gmail.com                         *
-//      Based on a Ideas from:  http://www.torry.net/             *
-//                                                                *
-//     Documentation and updated versions:                        *
-//               http://www.bsalsa.com                            *
-//*****************************************************************
+// *****************************************************************
+// Rich Edit for Web Browser                 *
+// *
+// For Delphi 5 to XE                         *
+// Freeware Component                         *
+// by                                  *
+// Eran Bodankin (bsalsa)                     *
+// bsalsa@gmail.com                         *
+// Based on a Ideas from:  http://www.torry.net/             *
+// *
+// Documentation and updated versions:                        *
+// http://www.bsalsa.com                            *
+// *****************************************************************
 
-{*******************************************************************************}
-{LICENSE:
-THIS SOFTWARE IS PROVIDED TO YOU "AS IS" WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESSED OR IMPLIED INCLUDING BUT NOT LIMITED TO THE APPLIED
-WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-YOU ASSUME THE ENTIRE RISK AS TO THE ACCURACY AND THE USE OF THE SOFTWARE
-AND ALL OTHER RISK ARISING OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE
-AND DOCUMENTATION. BSALSA PRODUCTIONS DOES NOT WARRANT THAT THE SOFTWARE IS ERROR-FREE
-OR WILL OPERATE WITHOUT INTERRUPTION. THE SOFTWARE IS NOT DESIGNED, INTENDED
-OR LICENSED FOR USE IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE CONTROLS,
-INCLUDING WITHOUT LIMITATION, THE DESIGN, CONSTRUCTION, MAINTENANCE OR
-OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS,
-AIR TRAFFIC CONTROL, AND LIFE SUPPORT OR WEAPONS SYSTEMS. BSALSA PRODUCTIONS SPECIFICALLY
-DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH PURPOSE.
+{ ******************************************************************************* }
+{ LICENSE:
+  THIS SOFTWARE IS PROVIDED TO YOU "AS IS" WITHOUT WARRANTY OF ANY KIND,
+  EITHER EXPRESSED OR IMPLIED INCLUDING BUT NOT LIMITED TO THE APPLIED
+  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+  YOU ASSUME THE ENTIRE RISK AS TO THE ACCURACY AND THE USE OF THE SOFTWARE
+  AND ALL OTHER RISK ARISING OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE
+  AND DOCUMENTATION. BSALSA PRODUCTIONS DOES NOT WARRANT THAT THE SOFTWARE IS ERROR-FREE
+  OR WILL OPERATE WITHOUT INTERRUPTION. THE SOFTWARE IS NOT DESIGNED, INTENDED
+  OR LICENSED FOR USE IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE CONTROLS,
+  INCLUDING WITHOUT LIMITATION, THE DESIGN, CONSTRUCTION, MAINTENANCE OR
+  OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS,
+  AIR TRAFFIC CONTROL, AND LIFE SUPPORT OR WEAPONS SYSTEMS. BSALSA PRODUCTIONS SPECIFICALLY
+  DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH PURPOSE.
 
-You may use, change or modify the component under 4 conditions:
-1. In your website, add a link to "http://www.bsalsa.com"
-2. In your application, add credits to "Embedded Web Browser"
-3. Mail me  (bsalsa@gmail.com) any code change in the unit
-   for the benefit of the other users.
-4. Please consider donation in our web site!
-{*******************************************************************************}
-//$Id: RichEditBrowser.pas,v 1.2 2006/11/15 21:01:44 sergev Exp $
+  You may use, change or modify the component under 4 conditions:
+  1. In your website, add a link to "http://www.bsalsa.com"
+  2. In your application, add credits to "Embedded Web Browser"
+  3. Mail me  (bsalsa@gmail.com) any code change in the unit
+  for the benefit of the other users.
+  4. Please consider donation in our web site!
+  {******************************************************************************* }
+// $Id: RichEditBrowser.pas,v 1.2 2006/11/15 21:01:44 sergev Exp $
 
 unit RichEditBrowser;
 
@@ -43,8 +43,12 @@ interface
 {$I EWB.inc}
 
 uses
-  Windows, Messages, Classes, Controls, ComCtrls, ExtCtrls, Graphics, ComObj, Menus,
-  HighLightHTML, HighLightXML, EmbeddedWB, ImgList, RichEdit, ClipBrd, ActiveX;
+  Windows, Messages, Classes, Controls, ComCtrls, ExtCtrls, Graphics, ComObj,
+  Menus,
+  HighLightHTML, HighLightXML, EmbeddedWB,
+{$IFDEF DELPHIXE8_UP}
+
+{$ENDIF} ImgList, System.UITypes, RichEdit, ClipBrd, ActiveX;
 
 const
   REO_GETOBJ_NO_INTERFACES = $00000000;
@@ -85,15 +89,16 @@ const
   clHyperlink = clBlue;
   clHyperlinkBk = clWindow;
 
-// type
- // TRichEditVersion = 1..4;
+  // type
+  // TRichEditVersion = 1..4;
 type
   TURLClickEvent = procedure(Sender: TObject; const URL: string) of object;
   TTextAlignment = (taLeftJustify, taRightJustify, taCenter);
   TThemes = (tDefault, tXP, tBlack, tAluminum, tLight);
+
 type
-  TEditStreamCallBack = function(dwCookie: Longint; pbBuff: PByte; cb:
-    Longint; var pcb: Longint): DWORD; stdcall;
+  TEditStreamCallBack = function(dwCookie: Longint; pbBuff: PByte; cb: Longint;
+    var pcb: Longint): DWORD; stdcall;
 
   TEditStream = record
     dwCookie: Longint;
@@ -105,15 +110,15 @@ type
     ['{00020d03-0000-0000-c000-000000000046}']
     function GetNewStorage(out stg: IStorage): HResult; stdcall;
     function GetInPlaceContext(out Frame: IOleInPlaceFrame;
-      out Doc: IOleInPlaceUIWindow;
-      lpFrameInfo: POleInPlaceFrameInfo): HResult; stdcall;
+      out Doc: IOleInPlaceUIWindow; lpFrameInfo: POleInPlaceFrameInfo)
+      : HResult; stdcall;
     function ShowContainerUI(fShow: BOOL): HResult; stdcall;
     function QueryInsertObject(const clsid: TCLSID; const stg: IStorage;
       cp: Longint): HResult; stdcall;
     function DeleteObject(const oleobj: IOleObject): HResult; stdcall;
     function QueryAcceptData(const dataobj: IDataObject;
-      var cfFormat: TClipFormat; reco: DWORD; fReally: BOOL;
-      hMetaPict: HGLOBAL): HResult; stdcall;
+      var cfFormat: TClipFormat; reco: DWORD; fReally: BOOL; hMetaPict: HGLOBAL)
+      : HResult; stdcall;
     function ContextSensitiveHelp(fEnterMode: BOOL): HResult; stdcall;
     function GetClipboardData(const chrg: TCharRange; reco: DWORD;
       out dataobj: IDataObject): HResult; stdcall;
@@ -122,7 +127,6 @@ type
     function GetContextMenu(seltype: Word; const oleobj: IOleObject;
       const chrg: TCharRange; out Menu: HMENU): HResult; stdcall;
   end;
-
 
 type
   TRichEditOleCallback = class(TInterfacedObject, IRichEditOleCallback)
@@ -136,14 +140,15 @@ type
     function GetContextMenu(seltype: Word; const oleobj: IOleObject;
       const chrg: TCharRange; out Menu: HMENU): HResult; stdcall;
     function GetInPlaceContext(out Frame: IOleInPlaceFrame;
-      out Doc: IOleInPlaceUIWindow;
-      lpFrameInfo: POleInPlaceFrameInfo): HResult; stdcall;
+      out Doc: IOleInPlaceUIWindow; lpFrameInfo: POleInPlaceFrameInfo)
+      : HResult; stdcall;
     function ShowContainerUI(fShow: BOOL): HResult; stdcall;
     function QueryInsertObject(const clsid: TCLSID; const stg: IStorage;
       cp: Longint): HResult; stdcall;
     function DeleteObject(const oleobj: IOleObject): HResult; stdcall;
-    function QueryAcceptData(const dataobj: IDataObject; var cfFormat: TClipFormat;
-      reco: DWORD; fReally: BOOL; hMetaPict: HGLOBAL): HResult; stdcall;
+    function QueryAcceptData(const dataobj: IDataObject;
+      var cfFormat: TClipFormat; reco: DWORD; fReally: BOOL; hMetaPict: HGLOBAL)
+      : HResult; stdcall;
     function ContextSensitiveHelp(fEnterMode: BOOL): HResult; stdcall;
     function GetDragDropEffect(fDrag: BOOL; grfKeyState: DWORD;
       var dwEffect: DWORD): HResult; stdcall;
@@ -152,18 +157,18 @@ type
   TRichEditWB = class(TRichEdit)
 
   private
-   // OldStatusBarW : Integer;
+    // OldStatusBarW : Integer;
     FAcceptDragComponnents: boolean;
     FAcceptDragFiles: boolean;
-    FAutoNavigate: Boolean;
+    FAutoNavigate: boolean;
     FEmbeddedWB: TEmbeddedWB;
     FFileName: string;
-    FHideCaret: Boolean;
-    FHighlightURL: Boolean;
-    FHTMLHighlight: Boolean;
+    FHideCaret: boolean;
+    FHighlightURL: boolean;
+    FHTMLHighlight: boolean;
     FImage: TImage;
-    FModified: Boolean;
-    FMoreThen64KB: Boolean;
+    FModified: boolean;
+    FMoreThen64KB: boolean;
     FOnURLClick: TURLClickEvent;
     FSelPos: Integer;
     FStatusbar: TStatusbar;
@@ -172,13 +177,13 @@ type
     FTextAlignment: TAlignment;
     FTopGap, fLeftGap: Integer;
     FRightGap, fBottomGap: Integer;
-    FXMLHighlight: Boolean;
+    FXMLHighlight: boolean;
     FPopupVerbMenu: TPopupMenu;
-    FAutoVerbMenu: Boolean;
+    FAutoVerbMenu: boolean;
     FMyCallback: TRichEditOleCallback;
-    inserted: Boolean;
-    function GetCanUndo: Boolean;
-    function GetModified: Boolean;
+    inserted: boolean;
+    function GetCanUndo: boolean;
+    function GetModified: boolean;
     function GetRTFText: string;
     procedure CheckFileSave;
     procedure ClearAll(Sender: TObject);
@@ -197,9 +202,9 @@ type
     procedure ReplaceDialogReplace(Sender: TObject);
     procedure SetEditRect;
     procedure SetFileName(const FileName: string);
-    procedure SetHideCaret(const Value: Boolean);
-    procedure SetHyperlink(Setlink: Boolean; wParam: Integer);
-    procedure SetModified(Value: Boolean);
+    procedure SetHideCaret(const Value: boolean);
+    procedure SetHyperlink(Setlink: boolean; wParam: Integer);
+    procedure SetModified(Value: boolean);
     procedure SetRTFText(RichText: string);
     procedure SetTextAlignment(al: TAlignment);
     procedure UpdateInfo;
@@ -239,27 +244,27 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Loaded; override;
     destructor Destroy; override;
-    function AddBitmapFromImagelist(const ASource: TCustomImageList; const
-      AImageIndex: TImageIndex): Integer;
+    function AddBitmapFromImagelist(const ASource: TCustomImageList;
+      const AImageIndex: TImageIndex): Integer;
     function AddBullets: Integer;
-    function AddButton(bCaption, bName: string; reLeft, bLeft, bTop: Integer): Integer;
-    function AddCheckBox(cbCaption, cbName: string; reLeft, cbLeft, cbTop:
-      Integer; Chk: Boolean): Integer;
+    function AddButton(bCaption, bName: string;
+      reLeft, bLeft, bTop: Integer): Integer;
+    function AddCheckBox(cbCaption, cbName: string;
+      reLeft, cbLeft, cbTop: Integer; Chk: boolean): Integer;
     function AddDateAndTime: Integer;
-    function AddEditBox(eText, eName: string; reLeft, eLeft, eTop: Integer): Integer;
+    function AddEditBox(eText, eName: string;
+      reLeft, eLeft, eTop: Integer): Integer;
     function AddEmptyLine: Integer;
-    function AddFile(FilePath: string; Linked: bool; AsIcon:
-      Bool): Integer;
-    function AddFiles(Files: TStrings; Linked: bool; AsIcon:
-      Bool): Integer;
-    function AddFormatedText(const txt: string; Bold, Italic, Strikeout, Underline:
-      boolean; txtColor: TColor): Integer;
+    function AddFile(FilePath: string; Linked: BOOL; AsIcon: BOOL): Integer;
+    function AddFiles(Files: TStrings; Linked: BOOL; AsIcon: BOOL): Integer;
+    function AddFormatedText(const txt: string;
+      Bold, Italic, Strikeout, Underline: boolean; txtColor: TColor): Integer;
     function AddImage(FilePath: string): Integer;
     function AddImages(Files: TStrings): Integer;
     function AddImageUsingClipboard(FilePath: string): Integer;
     function AddLineNumbering: Integer;
-    function AddRadioButton(rbCaption, rbName: string; reLeft, rbLeft, rbTop:
-      Integer; Chk: boolean): Integer;
+    function AddRadioButton(rbCaption, rbName: string;
+      reLeft, rbLeft, rbTop: Integer; Chk: boolean): Integer;
     function AddRomanNumbering: Integer;
     function AddRTFSelection(sourceStream: TStream): Integer;
     function AddRtfText(str: string): Integer;
@@ -272,13 +277,13 @@ type
     function GetLineFromChar(CharIndex: Integer): Integer;
     function GetLineIndex(LineNo: Integer): Integer;
     function GetLineLength(CharIndex: Integer): Integer;
-    function GetNextWord(var s: string; var PrevWord: string): string;
+    function GetNextWord(var S: string; var PrevWord: string): string;
     function GetRTFSelection(intoStream: TStream): string;
     function GetRTFTextToString: string;
     function GetSelectedText(var SelectedText: string): boolean;
     function GetVisibleLines: Integer;
-    function IsNumber(s: string): Boolean;
-    function IsSeparator(Car: Char): Boolean;
+    function IsNumber(S: string): boolean;
+    function IsSeparator(Car: Char): boolean;
     function RemoveTextFormats: Integer;
     function SearchAndReplace(InSearch, InReplace: string): Integer;
     function SearchForTextAndSelect(SearchText: string): string;
@@ -327,51 +332,52 @@ type
     procedure SetLineSpacing(lineSpacing: Byte);
     procedure SetOffSetsValues(SetTo: Integer);
     procedure SetSelectedBgColor;
-    procedure SetSelectionHyperLink(Hyperlink: Boolean);
+    procedure SetSelectionHyperLink(Hyperlink: boolean);
     procedure SetTabWidth(FTabWidth: Integer);
     procedure SetThemes(Thm: TThemes);
     procedure SetToMoreThen64KB;
     procedure SetToOEM(var Key: AnsiChar);
-    procedure SetWordHyperLink(Hyperlink: Boolean);
+    procedure SetWordHyperLink(Hyperlink: boolean);
     procedure UndoLast(Sender: TObject);
-    property CanUndo: Boolean read GetCanUndo;
-    property Modified: Boolean read GetModified write SetModified;
-    property AutoVerbMenu: boolean read FAutoVerbMenu write FAutoVerbMenu default True;
+    property CanUndo: boolean read GetCanUndo;
+    property Modified: boolean read GetModified write SetModified;
+    property AutoVerbMenu: boolean read FAutoVerbMenu write FAutoVerbMenu
+      default True;
 
   published
     procedure DblClick; override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure KeyPress(var Key: Char); override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y:
-      Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
+      X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y:
-      Integer); override;
-    property AcceptDragComponnents: Boolean read fAcceptDragComponnents write
-      fAcceptDragComponnents default True;
-    property AcceptDragFiles: Boolean read fAcceptDragFiles write
-      fAcceptDragFiles default True;
-    property AutoNavigate: boolean read fAutoNavigate write fAutoNavigate;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState;
+      X, Y: Integer); override;
+    property AcceptDragComponnents: boolean read FAcceptDragComponnents
+      write FAcceptDragComponnents default True;
+    property AcceptDragFiles: boolean read FAcceptDragFiles
+      write FAcceptDragFiles default True;
+    property AutoNavigate: boolean read FAutoNavigate write FAutoNavigate;
     property EmbeddedWB: TEmbeddedWB read FEmbeddedWB write FEmbeddedWB;
-    property FileName: string read fFileName write SetFileName;
-    property GapBottom: Integer read FBottomGap write setBottomGap default 0;
-    property GapLeft: Integer read FLeftGap write setLeftGap default 0;
+    property FileName: string read FFileName write SetFileName;
+    property GapBottom: Integer read fBottomGap write setBottomGap default 0;
+    property GapLeft: Integer read fLeftGap write setLeftGap default 0;
     property GapRight: Integer read FRightGap write setRightGap default 0;
     property GapTop: Integer read FTopGap write setTopGap default 0;
-    property HighlightHTML: boolean read fHTMLHighlight write fHTMLHighlight;
-    property HighlightURL: boolean read fHighlightURL write fHighlightURL;
-    property HighlightXML: boolean read fXMLHighlight write fXMLHighlight;
-    property Image: TImage read fImage write fImage;
+    property HighLightHTML: boolean read FHTMLHighlight write FHTMLHighlight;
+    property HighlightURL: boolean read FHighlightURL write FHighlightURL;
+    property HighLightXML: boolean read FXMLHighlight write FXMLHighlight;
+    property Image: TImage read FImage write FImage;
     property OnURLClick: TURLClickEvent read FOnURLClick write FOnURLClick;
     property RTFText: string read GetRTFText write SetRTFText;
-    property Statusbar: TStatusbar read fStatusbar write fStatusbar;
-    property SupprtMoreThen64KB: boolean read fMoreThen64KB write fMoreThen64KB;
-    property TextAlignment: TAlignment read fTextAlignment write fTextAlignment;
-    property HideCaret: Boolean read FHideCaret write SetHideCaret;
+    property Statusbar: TStatusbar read FStatusbar write FStatusbar;
+    property SupprtMoreThen64KB: boolean read FMoreThen64KB write FMoreThen64KB;
+    property TextAlignment: TAlignment read FTextAlignment write FTextAlignment;
+    property HideCaret: boolean read FHideCaret write SetHideCaret;
     property Themes: TThemes read FThemes write FThemes;
 
     property Align;
-    property Alignment;
+    property alignment;
     property Anchors;
     property BevelEdges;
     property BevelInner;
@@ -442,7 +448,7 @@ type
 type
   TREObject = packed record
     cbStruct: DWORD;
-    cp: longint;
+    cp: Longint;
     clsid: TCLSID;
     oleobj: IOleObject;
     stg: IStorage;
@@ -454,18 +460,19 @@ type
   end;
 
 type
-  IRichEditOle = interface(IUnknown)['{00020d00-0000-0000-c000-000000000046}']
-    function GetClientSite(out clientSite: IOleClientSite): HResult; stdcall;
+  IRichEditOle = interface(IUnknown)
+    ['{00020d00-0000-0000-c000-000000000046}']
+    function GetClientSite(out clientSite: IOLEClientSite): HResult; stdcall;
     function GetObjectCount: HResult; stdcall;
     function GetLinkCount: HResult; stdcall;
-    function GetObject(iob: Longint; out reobject: TReObject;
-      dwFlags: DWORD): HResult; stdcall;
-    function InsertObject(var reobject: TReObject): HResult; stdcall;
+    function GetObject(iob: Longint; out reobject: TREObject; dwFlags: DWORD)
+      : HResult; stdcall;
+    function InsertObject(var reobject: TREObject): HResult; stdcall;
     function ConvertObject(iob: Longint; rclsidNew: TIID;
       lpstrUsertypeNew: LPCSTR): HResult; stdcall;
     function ActivateAs(rclsid: TIID; rclsidAs: TIID): HResult; stdcall;
-    function SetHostNames(lpstrContainerApp: LPCSTR;
-      lpstrContainerObj: LPCSTR): HResult; stdcall;
+    function SetHostNames(lpstrContainerApp: LPCSTR; lpstrContainerObj: LPCSTR)
+      : HResult; stdcall;
     function SetLinkAvailable(iob: Longint; fAvailable: BOOL): HResult; stdcall;
     function SetDvaspect(iob: Longint; dvaspect: DWORD): HResult; stdcall;
     function HandsOffStorage(iob: Longint): HResult; stdcall;
@@ -478,21 +485,23 @@ type
       hMetaPict: HGLOBAL): HResult; stdcall;
   end;
 
-
-
-procedure CreateIStorage(out Fstorage: Istorage);
-function GetRichOleInterface(ARichEdit: TRichEdit; out RichOleInterface: IRichEditOle; out OleClientSite: IOleclientSite): boolean;
-procedure REOleSetCallback(RichEdit: TRichEdit; OleInterface: IRichEditOleCallback);
+procedure CreateIStorage(out Fstorage: IStorage);
+function GetRichOleInterface(ARichEdit: TRichEdit;
+  out RichOleInterface: IRichEditOle;
+  out OleClientSite: IOLEClientSite): boolean;
+procedure REOleSetCallback(RichEdit: TRichEdit;
+  OleInterface: IRichEditOleCallback);
 procedure ReleaseObject(var Obj);
-function SetFormatEtc(Cf: TClipFormat; med: Longint; td: PDVTargetDevice = nil;
+function SetFormatEtc(cf: TClipFormat; med: Longint; td: PDVTargetDevice = nil;
   Asp: Longint = DVASPECT_CONTENT; li: Longint = -1): TFormatEtc;
 function OleSwitchDisplayAspect(OleObject: IOleObject; var CurrentAspect: DWORD;
-  NewAspect: DWORD; METAFILEPICT: THandle; DeleteOldAspect, SetUpViewAdvise: boolean;
-  AdviseSink: IAdviseSink; var MustUpdate: boolean): HRESULT;
+  NewAspect: DWORD; METAFILEPICT: THandle;
+  DeleteOldAspect, SetUpViewAdvise: boolean; AdviseSink: IAdviseSink;
+  var MustUpdate: boolean): HResult;
 function GetOleClassFile(const Name: string): TCLSID;
 function OleCopyPasString(const Source: string; Malloc: IMalloc = nil): POleStr;
-function SetStgMedium(Stg, Handle: longint; Release: pointer = nil): TStgMedium;
-procedure OleFreeString(Str: POleStr; Malloc: IMalloc = nil);
+function SetStgMedium(stg, Handle: Longint; Release: pointer = nil): TStgMedium;
+procedure OleFreeString(str: POleStr; Malloc: IMalloc = nil);
 function OleMalloc(Size: Longword; Malloc: IMalloc = nil): pointer;
 procedure OleFree(Mem: pointer; Malloc: IMalloc = nil);
 procedure ChangeOleIcon(REdit: TRichEdit; HIcon: Hwnd; LabelIcon: string);
@@ -502,7 +511,7 @@ var
   FRichEditModule: THandle;
   RichEditOle: IRichEditOle;
   RichEditOleCallback: IRichEditOleCallback;
- // RichEditVersion     : TRichEditVersion;
+  // RichEditVersion     : TRichEditVersion;
 
 implementation
 
@@ -516,7 +525,7 @@ resourcestring
   sSaveChanges = 'Save changes to %s?';
   sOverWrite = 'The file already exist. Do you want to overwrite %s ?';
   sUntitled = 'Untitled';
-//  sModified = 'Modified';
+  // sModified = 'Modified';
   sColRowInfo = 'Line: %3d   Col: %3d';
 
 type
@@ -524,19 +533,25 @@ type
   private
     FMedium: STGMEDIUM;
     FFormat: FORMATETC;
-    FHasData: Boolean;
+    FHasData: boolean;
   protected
-    function GetData(const formatetcIn: TFormatEtc; out medium: TStgMedium): HResult; stdcall;
-    function GetDataHere(const formatetc: TFormatEtc; out medium: TStgMedium): HResult; stdcall;
-    function QueryGetData(const formatetc: TFormatEtc): HResult; stdcall;
-    function GetCanonicalFormatEtc(const formatetc: TFormatEtc; out formatetcOut: TFormatEtc): HResult; stdcall;
-    function SetData(const formatetc: TFormatEtc; var medium: TStgMedium; fRelease: BOOL): HResult; stdcall;
-    function EnumFormatEtc(dwDirection: Longint; out enumFormatEtc: IEnumFormatEtc): HResult; stdcall;
-    function DAdvise(const formatetc: TFormatEtc; advf: Longint; const advSink: IAdviseSink; out dwConnection: Longint): HResult; stdcall;
+    function GetData(const formatetcIn: TFormatEtc; out medium: TStgMedium)
+      : HResult; stdcall;
+    function GetDataHere(const FORMATETC: TFormatEtc; out medium: TStgMedium)
+      : HResult; stdcall;
+    function QueryGetData(const FORMATETC: TFormatEtc): HResult; stdcall;
+    function GetCanonicalFormatEtc(const FORMATETC: TFormatEtc;
+      out formatetcOut: TFormatEtc): HResult; stdcall;
+    function SetData(const FORMATETC: TFormatEtc; var medium: TStgMedium;
+      fRelease: BOOL): HResult; stdcall;
+    function EnumFormatEtc(dwDirection: Longint;
+      out EnumFormatEtc: IEnumFormatEtc): HResult; stdcall;
+    function DAdvise(const FORMATETC: TFormatEtc; advf: Longint;
+      const advSink: IAdviseSink; out dwConnection: Longint): HResult; stdcall;
     function DUnadvise(dwConnection: Longint): HResult; stdcall;
     function EnumDAdvise(out enumAdvise: IEnumStatData): HResult; stdcall;
     procedure SetBitmap(const ASource: TBitmap);
-    function GetOleObject(const AClient: IOleClientSite;
+    function GetOleObject(const AClient: IOLEClientSite;
       const AStorage: IStorage): IOleObject;
   public
     class procedure InsertBitmap(ADest: TCustomRichEdit; ASource: TBitmap);
@@ -548,70 +563,71 @@ var
   idoImage: TImageDataObject;
   ifOLE: IRichEditOle;
   ifData: IDataObject;
-  ifClient: IOleClientSite;
+  ifClient: IOLEClientSite;
   ifStorage: IStorage;
   ifBytes: ILockBytes;
   ifOLEObject: IOleObject;
-  sCode: HRESULT;
+  sCode: HResult;
   reObj: TREObject;
   gdClass: TGUID;
 begin
   ifOLE := nil;
   SendMessage(ADest.Handle, EM_GETOLEINTERFACE, 0, LPARAM(@ifOLE));
   if Assigned(ifOLE) then
-  try
-    idoImage := TImageDataObject.Create();
-    if idoImage.GetInterface(IDataObject, ifData) then
     try
-      idoImage.SetBitmap(ASource);
-      ifClient := nil;
-      ifOLE.GetClientSite(ifClient);
-      if Assigned(ifClient) then
-      try
-        ifBytes := nil;
-        sCode := CreateILockBytesOnHGlobal(0, True, ifBytes);
-        if (sCode = S_OK) and (Assigned(ifBytes)) then
+      idoImage := TImageDataObject.Create();
+      if idoImage.GetInterface(IDataObject, ifData) then
         try
-          sCode := StgCreateDocfileOnILockBytes(ifBytes, STGM_SHARE_EXCLUSIVE or
-            STGM_CREATE or STGM_READWRITE, 0, ifStorage);
-          if sCode = S_OK then
-          try
-            ifOLEObject := idoImage.GetOleObject(ifClient, ifStorage);
-            if Assigned(ifOLEObject) then
+          idoImage.SetBitmap(ASource);
+          ifClient := nil;
+          ifOLE.GetClientSite(ifClient);
+          if Assigned(ifClient) then
             try
-              OleSetContainedObject(ifOLEObject, True);
-              sCode := ifOLEObject.GetUserClassID(gdClass);
-              if sCode = S_OK then
-              begin
-                with reObj do
-                begin
-                              //clsid       := '';
-                  cp := LongInt(REO_CP_SELECTION);
-                  dvaspect := DVASPECT_CONTENT;
-                  oleobj := ifOLEObject;
-                  olesite := ifClient;
-                  stg := ifStorage;
+              ifBytes := nil;
+              sCode := CreateILockBytesOnHGlobal(0, True, ifBytes);
+              if (sCode = S_OK) and (Assigned(ifBytes)) then
+                try
+                  sCode := StgCreateDocfileOnILockBytes(ifBytes,
+                    STGM_SHARE_EXCLUSIVE or STGM_CREATE or STGM_READWRITE, 0,
+                    ifStorage);
+                  if sCode = S_OK then
+                    try
+                      ifOLEObject := idoImage.GetOleObject(ifClient, ifStorage);
+                      if Assigned(ifOLEObject) then
+                        try
+                          OleSetContainedObject(ifOLEObject, True);
+                          sCode := ifOLEObject.GetUserClassID(gdClass);
+                          if sCode = S_OK then
+                          begin
+                            with reObj do
+                            begin
+                              // clsid       := '';
+                              cp := Longint(REO_CP_SELECTION);
+                              dvaspect := DVASPECT_CONTENT;
+                              oleobj := ifOLEObject;
+                              olesite := ifClient;
+                              stg := ifStorage;
+                            end;
+                            ifOLE.InsertObject(reObj);
+                          end;
+                        finally
+                          ifOLEObject := nil;
+                        end;
+                    finally
+                      ifStorage := nil;
+                    end;
+                finally
+                  ifBytes := nil;
                 end;
-                ifOLE.InsertObject(reObj);
-              end;
             finally
-              ifOLEObject := nil;
+              ifClient := nil;
             end;
-          finally
-            ifStorage := nil;
-          end;
         finally
-          ifBytes := nil;
+          ifData := nil;
         end;
-      finally
-        ifClient := nil;
-      end;
     finally
-      ifData := nil;
+      ifOLE := nil;
     end;
-  finally
-    ifOLE := nil;
-  end;
 end;
 
 procedure TImageDataObject.SetBitmap;
@@ -628,10 +644,10 @@ end;
 
 function TImageDataObject.GetOleObject;
 var
-  sCode: HRESULT;
+  sCode: HResult;
 begin
-  sCode := OleCreateStaticFromData(Self, IOleObject, OLERendER_FORMAT,
-    @FFormat, AClient, AStorage, Result);
+  sCode := OleCreateStaticFromData(Self, IOleObject, OLERendER_FORMAT, @FFormat,
+    AClient, AStorage, Result);
   if sCode <> S_OK then
   begin
     OleCheck(sCode);
@@ -681,7 +697,7 @@ end;
 function TImageDataObject.SetData;
 begin
   FMedium := medium;
-  FFormat := formatetc;
+  FFormat := FORMATETC;
   FHasData := True;
   Result := S_OK;
 end;
@@ -706,7 +722,8 @@ begin
   Result := E_NOTIMPL;
 end;
 
-function TRichEditOleCallback.QueryInterface(const iid: TGUID; out Obj): HResult;
+function TRichEditOleCallback.QueryInterface(const iid: TGUID; out Obj)
+  : HResult;
 begin
   if GetInterface(iid, Obj) then
     Result := S_OK
@@ -714,13 +731,13 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-function TRichEditOleCallback._AddRef: LongInt;
+function TRichEditOleCallback._AddRef: Longint;
 begin
   Inc(FRefCount);
   Result := FRefCount;
 end;
 
-function TRichEditOleCallback._Release: LongInt;
+function TRichEditOleCallback._Release: Longint;
 begin
   Dec(FRefCount);
   Result := FRefCount;
@@ -736,27 +753,27 @@ begin
   end;
 end;
 
-function TRichEditOleCallback.GetClipboardData(const chrg: TCharRange; reco: DWORD;
-  out dataobj: IDataObject): HResult;
+function TRichEditOleCallback.GetClipboardData(const chrg: TCharRange;
+  reco: DWORD; out dataobj: IDataObject): HResult;
 begin
   Result := E_NOTIMPL;
 end;
 
 function TRichEditOleCallback.GetContextMenu(seltype: Word;
-  const oleobj: IOleObject; const chrg: TCharRange;
-  out Menu: HMENU): HResult;
+  const oleobj: IOleObject; const chrg: TCharRange; out Menu: HMENU): HResult;
 begin
- // menu:=0;
+  // menu:=0;
   Result := S_OK; // Result := E_NOTIMPL;
 end;
 
-function TRichEditOleCallback.GetInPlaceContext(out Frame: IOleInPlaceFrame; out Doc: IOleInPlaceUIWindow; lpFrameInfo: POleInPlaceFrameInfo): HResult;
+function TRichEditOleCallback.GetInPlaceContext(out Frame: IOleInPlaceFrame;
+  out Doc: IOleInPlaceUIWindow; lpFrameInfo: POleInPlaceFrameInfo): HResult;
 begin
   Result := S_OK;
 end;
 
-function TRichEditOleCallback.QueryInsertObject(const clsid: TCLSID; const stg: IStorage;
-  cp: Longint): HResult;
+function TRichEditOleCallback.QueryInsertObject(const clsid: TCLSID;
+  const stg: IStorage; cp: Longint): HResult;
 begin
   Result := NOERROR;
 end;
@@ -791,27 +808,31 @@ begin
   Result := S_OK;
 end;
 
-procedure CreateIStorage(out Fstorage: Istorage);
+procedure CreateIStorage(out Fstorage: IStorage);
 var
-  FlockBytes: IlockBytes;
+  FlockBytes: ILockBytes;
 begin
-  OleCheck(CreateILockBytesOnHGlobal(0, True, FLockBytes));
-  OleCheck(StgCreateDocfileOnILockBytes(FLockBytes, STGM_SHARE_EXCLUSIVE or STGM_CREATE or STGM_READWRITE, 0, FStorage))
+  OleCheck(CreateILockBytesOnHGlobal(0, True, FlockBytes));
+  OleCheck(StgCreateDocfileOnILockBytes(FlockBytes, STGM_SHARE_EXCLUSIVE or
+    STGM_CREATE or STGM_READWRITE, 0, Fstorage))
 end;
 
-function GetRichOleInterface(ARichEdit: TRichEdit; out RichOleInterface: IRichEditOle; out OleClientSite: IOleclientSite): boolean;
+function GetRichOleInterface(ARichEdit: TRichEdit;
+  out RichOleInterface: IRichEditOle;
+  out OleClientSite: IOLEClientSite): boolean;
 var
   AppName: AnsiString;
 begin
   Result := False;
-  if boolean(SendMessage(ARichEdit.Handle, EM_GETOLEINTERFACE, 0, longint(@RichOleInterface))) then
+  if boolean(SendMessage(ARichEdit.Handle, EM_GETOLEINTERFACE, 0,
+    Longint(@RichOleInterface))) then
   begin
     try
       AppName := AnsiString(Application.Title);
       if Trim(AppName) = '' then
         AppName := AnsiString(ExtractFileName(Application.ExeName));
       RichOleInterface.SetHostNames(PAnsiChar(AppName), PAnsiChar(AppName));
-      RichOleInterface.GetClientSite(OleclientSite);
+      RichOleInterface.GetClientSite(OleClientSite);
       Result := True;
     except
       Result := False;
@@ -819,9 +840,10 @@ begin
   end;
 end;
 
-procedure REOleSetCallback(RichEdit: TRichEdit; OleInterface: IRichEditOleCallback);
+procedure REOleSetCallback(RichEdit: TRichEdit;
+  OleInterface: IRichEditOleCallback);
 begin
-  SendMessage(RichEdit.Handle, EM_SETOLECALLBACK, 0, LPARAM(Oleinterface));
+  SendMessage(RichEdit.Handle, EM_SETOLECALLBACK, 0, LPARAM(OleInterface));
 end;
 
 procedure ReleaseObject(var Obj);
@@ -833,13 +855,13 @@ begin
   end;
 end;
 
-function SetFormatEtc(Cf: TClipFormat; med: Longint; td: PDVTargetDevice = nil;
+function SetFormatEtc(cf: TClipFormat; med: Longint; td: PDVTargetDevice = nil;
   Asp: Longint = DVASPECT_CONTENT; li: Longint = -1): TFormatEtc;
 begin
   with Result do
   begin
     cfFormat := cf;
-    dwAspect := asp;
+    dwAspect := Asp;
     ptd := td;
     tymed := med;
     lindex := li
@@ -847,19 +869,18 @@ begin
 end;
 
 function OleSwitchDisplayAspect(OleObject: IOleObject; var CurrentAspect: DWORD;
-  NewAspect: DWORD; METAFILEPICT: THandle; DeleteOldAspect, SetUpViewAdvise: boolean;
-  AdviseSink: IAdviseSink; var MustUpdate: boolean): HRESULT;
+  NewAspect: DWORD; METAFILEPICT: THandle;
+  DeleteOldAspect, SetUpViewAdvise: boolean; AdviseSink: IAdviseSink;
+  var MustUpdate: boolean): HResult;
 var
   OleCache: IOleCache;
   ViewObject: IViewObject;
   EnumStatData: IEnumStatData;
   StatData: TStatData;
-  FormatEtc: TFormatEtc;
-  Medium: TStgMedium;
-  Advf,
-    NewConnection,
-    OldAspect: longint;
-  Error: HRESULT;
+  FORMATETC: TFormatEtc;
+  medium: TStgMedium;
+  advf, NewConnection, OldAspect: Longint;
+  Error: HResult;
 begin
   OleCache := nil;
   ViewObject := nil;
@@ -871,20 +892,21 @@ begin
     Result := E_INVALIDARG;
     Exit
   end;
-  FormatEtc := SetFormatEtc(0, TYMED_NULL, nil, NewAspect);
+  FORMATETC := SetFormatEtc(0, TYMED_NULL, nil, NewAspect);
   if (NewAspect = dvaspect_Icon) and (METAFILEPICT <> 0) then
-    Advf := advf_nodata
+    advf := advf_nodata
   else
-    Advf := ADVF_PRIMEFIRST;
-  Result := OleCache.Cache(FormatEtc, Advf, NewConnection);
+    advf := ADVF_PRIMEFIRST;
+  Result := OleCache.Cache(FORMATETC, advf, NewConnection);
   if Failed(Result) then
     Exit;
   CurrentAspect := NewAspect;
   if (NewAspect = dvaspect_Icon) and (METAFILEPICT <> 0) then
   begin
-    FormatEtc := SetFormatEtc(CF_METAFILEPICT, TYMED_MFPICT, nil, dvaspect_Icon);
-    Medium := SetStgMedium(TYMED_MFPICT, METAFILEPICT);
-    OleCache.SetData(FormatEtc, Medium, False)
+    FORMATETC := SetFormatEtc(CF_METAFILEPICT, TYMED_MFPICT, nil,
+      dvaspect_Icon);
+    medium := SetStgMedium(TYMED_MFPICT, METAFILEPICT);
+    OleCache.SetData(FORMATETC, medium, False)
   end
   else
     MustUpdate := True;
@@ -901,7 +923,7 @@ begin
     begin
       Error := EnumStatData.Next(1, StatData, nil);
       if Error = S_OK then
-        if StatData.FormatEtc.dwAspect = OldAspect then
+        if StatData.FORMATETC.dwAspect = OldAspect then
           OleCache.Uncache(StatData.dwConnection)
     end
   end;
@@ -939,16 +961,16 @@ begin
   end
 end;
 
-function SetStgMedium(Stg, Handle: longint; Release: pointer = nil): TStgMedium;
+function SetStgMedium(stg, Handle: Longint; Release: pointer = nil): TStgMedium;
 begin
-  Result.tymed := Stg;
-  Result.hGlobal := Handle;
+  Result.tymed := stg;
+  Result.HGLOBAL := Handle;
   Result.unkForRelease := Release
 end;
 
-procedure OleFreeString(Str: POleStr; Malloc: IMalloc = nil);
+procedure OleFreeString(str: POleStr; Malloc: IMalloc = nil);
 begin
-  OleFree(Str, Malloc)
+  OleFree(str, Malloc)
 end;
 
 function OleMalloc(Size: Longword; Malloc: IMalloc = nil): pointer;
@@ -977,22 +999,25 @@ end;
 
 procedure ChangeOleIcon(REdit: TRichEdit; HIcon: Hwnd; LabelIcon: string);
 var
-  Update: Boolean;
+  Update: boolean;
   Selectiontype: Integer;
   RichEditOle: IRichEditOle;
-  OleClientSite: IOleClientSite;
-  REObject: TReObject;
+  OleClientSite: IOLEClientSite;
+  reobject: TREObject;
 begin
   Update := True;
-  FillChar(ReObject, SizeOf(ReObject), 0);
-  ReObject.cbStruct := SizeOf(ReObject);
-  Selectiontype := SendMessage(Redit.Handle, EM_SELECTIONtype, 0, 0);
-  if selectionType = SEL_OBJECT then
+  FillChar(reobject, SizeOf(reobject), 0);
+  reobject.cbStruct := SizeOf(reobject);
+  Selectiontype := SendMessage(REdit.Handle, EM_SELECTIONtype, 0, 0);
+  if Selectiontype = SEL_OBJECT then
     GetRichOleInterface(REdit, RichEditOle, OleClientSite);
-  OleCheck(RichEditOle.GetObject(Longint(REO_IOB_SELECTION), ReObject, REO_GETOBJ_POLEOBJ or REO_GETOBJ_POLESITE));
-  HIcon := OleMetafilePictFromIconAndLabel(Hicon, OleCopyPasString(LabelIcon), '', 0);
-  OleSwitchDisplayAspect(REObject.oleobj, REObject.dvaspect, REObject.dvaspect, Hicon, False, False, nil, Update);
-  OleCheck(REobject.oleobj.Update);
+  OleCheck(RichEditOle.GetObject(Longint(REO_IOB_SELECTION), reobject,
+    REO_GETOBJ_POLEOBJ or REO_GETOBJ_POLESITE));
+  HIcon := OleMetafilePictFromIconAndLabel(HIcon,
+    OleCopyPasString(LabelIcon), '', 0);
+  OleSwitchDisplayAspect(reobject.oleobj, reobject.dvaspect, reobject.dvaspect,
+    HIcon, False, False, nil, Update);
+  OleCheck(reobject.oleobj.Update);
 end;
 
 function TRichEditWB.ConvertBitmapToRTF(pict: TBitmap): string;
@@ -1033,54 +1058,60 @@ begin
   Result := rtf;
 end;
 
-function TRichEditWB.AddFiles(Files: TStrings; Linked: bool; AsIcon: Bool): Integer;
+function TRichEditWB.AddFiles(Files: TStrings; Linked: BOOL;
+  AsIcon: BOOL): Integer;
 var
   I: Integer;
   FilePath: string;
-  Ind: word;
-  HIcon: hwnd;
+  Ind: Word;
+  HIcon: Hwnd;
   Update: boolean;
-  OleClientSite: IOleClientSite;
+  OleClientSite: IOLEClientSite;
   Storage: IStorage;
   OleObject: IOleObject;
-  ReObject: TReObject;
-  RichEditOle: IrichEditOle;
+  reobject: TREObject;
+  RichEditOle: IRichEditOle;
 begin
   Ind := 1;
   Update := True;
-  FillChar(ReObject, SizeOf(TReObject), 0);
+  FillChar(reobject, SizeOf(TREObject), 0);
   for I := 0 to Files.Count - 1 do
   begin
     FilePath := Files[I];
-    if GetRichOleInterface(Self, RichEDitOle, OleClientSite) then
+    if GetRichOleInterface(Self, RichEditOle, OleClientSite) then
     begin
       Storage := nil;
       try
         CreateIStorage(Storage);
         if Linked then
-          OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject, OLERendER_DRAW, nil, OleClientSite, Storage, OleObject))
+          OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject,
+            OLERendER_DRAW, nil, OleClientSite, Storage, OleObject))
         else
-          OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject, OLERendER_DRAW, nil, OleClientSite, Storage, OleObject));
-        with ReObject do
+          OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject,
+            OLERendER_DRAW, nil, OleClientSite, Storage, OleObject));
+        with reobject do
         begin
-          cbStruct := SizeOf(TReObject);
+          cbStruct := SizeOf(TREObject);
           cp := Integer(REO_CP_SELECTION);
-          OleObject.GetUserClassId(CLSID);
+          OleObject.GetUserClassID(clsid);
           oleobj := OleObject;
           stg := Storage;
           olesite := OleClientSite;
-          if Asicon then
-            DvAspect := DVASPECT_ICON
+          if AsIcon then
+            dvaspect := dvaspect_Icon
           else
-            DvAspect := DVASPECT_CONTENT;
+            dvaspect := DVASPECT_CONTENT;
           dwFlags := REO_RESIZABLE or REO_DYNAMICSIZE;
         end;
-        if IsEqualCLSID(REObject.CLSID, CLSID_NULL) then
-          REObject.CLSID := GetOleClassFile(FilePath);
-        HIcon := ShellAPI.ExtractAssociatedIcon(Application.Handle, PChar(FilePath), Ind);
-        HIcon := OleMetafilePictFromIconAndLabel(Hicon, OleCopyPasString(ExtractFileName(FilePath)), '', 0);
-        OleSwitchDisplayAspect(OleObject, REObject.dvaspect, REObject.dvaspect, Hicon, False, False, nil, Update);
-        OleCheck(RichEditOle.InsertObject(ReObject));
+        if IsEqualCLSID(reobject.clsid, CLSID_NULL) then
+          reobject.clsid := GetOleClassFile(FilePath);
+        HIcon := ShellAPI.ExtractAssociatedIcon(Application.Handle,
+          PChar(FilePath), Ind);
+        HIcon := OleMetafilePictFromIconAndLabel(HIcon,
+          OleCopyPasString(ExtractFileName(FilePath)), '', 0);
+        OleSwitchDisplayAspect(OleObject, reobject.dvaspect, reobject.dvaspect,
+          HIcon, False, False, nil, Update);
+        OleCheck(RichEditOle.InsertObject(reobject));
         SendMessage(Self.Handle, EM_SCROLLCARET, 0, 0);
         OleCheck(OleObject.Update);
       finally
@@ -1092,52 +1123,56 @@ begin
   Result := Lines.Count;
 end;
 
-function TRichEditWB.AddFile(FilePath: string; Linked: bool; AsIcon: Bool): Integer;
+function TRichEditWB.AddFile(FilePath: string; Linked: BOOL;
+  AsIcon: BOOL): Integer;
 var
-  Ind: word;
-  HIcon: hwnd;
+  Ind: Word;
+  HIcon: Hwnd;
   Update: boolean;
-  OleClientSite: IOleClientSite;
+  OleClientSite: IOLEClientSite;
   Storage: IStorage;
   OleObject: IOleObject;
-  ReObject: TReObject;
-  RichEditOle: IrichEditOle;
+  reobject: TREObject;
+  RichEditOle: IRichEditOle;
 begin
   inserted := True;
   Ind := 1;
   Update := True;
-  FillChar(ReObject, SizeOf(TReObject), 0);
-  if GetRichOleInterface(Self, RichEDitOle, OleClientSite) then
+  FillChar(reobject, SizeOf(TREObject), 0);
+  if GetRichOleInterface(Self, RichEditOle, OleClientSite) then
   begin
     Storage := nil;
     try
       CreateIStorage(Storage);
       if Linked then
-        OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath),
-          IOleObject, OLERendER_DRAW, nil, OleClientSite, Storage, OleObject))
+        OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject,
+          OLERendER_DRAW, nil, OleClientSite, Storage, OleObject))
       else
-        OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath),
-          IOleObject, OLERendER_DRAW, nil, OleClientSite, Storage, OleObject));
-      with ReObject do
+        OleCheck(OleCreateLinkToFile(OleCopyPasString(FilePath), IOleObject,
+          OLERendER_DRAW, nil, OleClientSite, Storage, OleObject));
+      with reobject do
       begin
-        cbStruct := SizeOf(TReObject);
+        cbStruct := SizeOf(TREObject);
         cp := Integer(REO_CP_SELECTION);
-        OleObject.GetUserClassId(CLSID);
+        OleObject.GetUserClassID(clsid);
         oleobj := OleObject;
         stg := Storage;
         olesite := OleClientSite;
-        if Asicon then
-          DvAspect := DVASPECT_ICON
+        if AsIcon then
+          dvaspect := dvaspect_Icon
         else
-          DvAspect := DVASPECT_CONTENT;
+          dvaspect := DVASPECT_CONTENT;
         dwFlags := REO_RESIZABLE or REO_DYNAMICSIZE;
       end;
-      if IsEqualCLSID(REObject.CLSID, CLSID_NULL) then
-        REObject.CLSID := GetOleClassFile(FilePath);
-      HIcon := ShellAPI.ExtractAssociatedIcon(Application.Handle, PChar(FilePath), Ind);
-      HIcon := OleMetafilePictFromIconAndLabel(Hicon, OleCopyPasString(ExtractFileName(FilePath)), '', 0);
-      OleSwitchDisplayAspect(OleObject, REObject.dvaspect, REObject.dvaspect, Hicon, False, False, nil, Update);
-      OleCheck(RichEditOle.InsertObject(ReObject));
+      if IsEqualCLSID(reobject.clsid, CLSID_NULL) then
+        reobject.clsid := GetOleClassFile(FilePath);
+      HIcon := ShellAPI.ExtractAssociatedIcon(Application.Handle,
+        PChar(FilePath), Ind);
+      HIcon := OleMetafilePictFromIconAndLabel(HIcon,
+        OleCopyPasString(ExtractFileName(FilePath)), '', 0);
+      OleSwitchDisplayAspect(OleObject, reobject.dvaspect, reobject.dvaspect,
+        HIcon, False, False, nil, Update);
+      OleCheck(RichEditOle.InsertObject(reobject));
       SendMessage(Self.Handle, EM_SCROLLCARET, 0, 0);
       OleCheck(OleObject.Update);
     finally
@@ -1145,10 +1180,10 @@ begin
       Storage := nil;
     end;
   end;
-  result := Lines.Count;
+  Result := Lines.Count;
 end;
 
-procedure AddBitmapToRichEdit(bmp: Tbitmap; RichEdit: TRichEditWB);
+procedure AddBitmapToRichEdit(bmp: TBitmap; RichEdit: TRichEditWB);
 
   function BitmapToRTF(pict: TBitmap): string;
   var
@@ -1187,12 +1222,13 @@ procedure AddBitmapToRichEdit(bmp: Tbitmap; RichEdit: TRichEditWB);
     rtf := rtf + hexpict + ' }}';
     Result := rtf;
   end;
+
 var
-  s: TstringStream;
+  S: TstringStream;
 begin
-  S := TStringStream.Create(BitmapToRTF(bmp));
+  S := TstringStream.Create(BitmapToRTF(bmp));
   RichEdit.PlainText := False;
- // RichEdit.StreamMode := [smSelection];
+  // RichEdit.StreamMode := [smSelection];
   RichEdit.Lines.LoadFromStream(S);
   S.Free;
 end;
@@ -1200,46 +1236,48 @@ end;
 function TRichEditWB.AddImages(Files: TStrings): Integer;
 var
   Ext: string;
-  Pict: TPicture;
+  pict: TPicture;
   I: Integer;
 begin
   Result := 0;
-  Pict := TPicture.Create;
+  pict := TPicture.Create;
   try
     for I := 0 to Files.Count - 1 do
     begin
       Ext := ExtractFileExt(Files[I]);
-      if (Ext = '.bmp') or (Ext = '.gif') or (Ext = '.jpg') or (Ext = '.jpeg') then
+      if (Ext = '.bmp') or (Ext = '.gif') or (Ext = '.jpg') or (Ext = '.jpeg')
+      then
       begin
-        Pict.LoadFromFile(Files[I]);
-        Clipboard.Assign(Pict);
+        pict.LoadFromFile(Files[I]);
+        Clipboard.Assign(pict);
         PasteFromClipboard;
         SendMessage(Handle, WM_PASTE, 0, 0);
         Result := Lines.Count;
       end
       else
       begin
-        MessageDlg('This format is not supported in this feature.', mtError, [mbOK], 0);
+        MessageDlg('This format is not supported in this feature.', mtError,
+          [mbOK], 0);
       end
     end;
   finally
-    Pict.Free;
+    pict.Free;
   end;
 end;
 
 function TRichEditWB.AddImageUsingClipboard(FilePath: string): Integer;
 var
-  Pict: TPicture;
+  pict: TPicture;
 begin
-  Pict := TPicture.Create;
+  pict := TPicture.Create;
   try
     inserted := True;
-    Pict.LoadFromFile(FilePath);
-    Clipboard.Assign(Pict);
+    pict.LoadFromFile(FilePath);
+    Clipboard.Assign(pict);
     PasteFromClipboard;
     Result := Lines.Count;
   finally
-    Pict.Free;
+    pict.Free;
   end;
 end;
 
@@ -1256,38 +1294,38 @@ begin
       ImageBMP := TBitmap.Create;
       ImageBMP.LoadFromFile(FilePath);
       Clipboard.Assign(ImageBMP);
-         // Clipboard.AsText:=ConvertBitmapToRTF(ImageBMP);
+      // Clipboard.AsText:=ConvertBitmapToRTF(ImageBMP);
       Result := Lines.Count;
     finally
       PasteFromClipboard;
     end;
     ImageBMP.Free;
   end
+  else if (Pos('.jp', FilePath) > 0) or (Pos('.JP', FilePath) > 0) then
+  begin
+    try
+      ImageJPG := TJPEGImage.Create;
+      ImageJPG.LoadFromFile(FilePath);
+      Clipboard.Assign(ImageJPG);
+      Result := Lines.Count;
+    finally
+      PasteFromClipboard;
+    end;
+    ImageJPG.Free;
+  end
   else
-    if (Pos('.jp', FilePath) > 0) or (Pos('.JP', FilePath) > 0) then
-    begin
-      try
-        ImageJPG := TJPEGImage.Create;
-        ImageJPG.LoadFromFile(FilePath);
-        Clipboard.Assign(ImageJPG);
-        Result := Lines.Count;
-      finally
-        PasteFromClipboard;
-      end;
-      ImageJPG.Free;
-    end
-    else
-    begin
-      MessageDlg('This format is not supported in this feature.', mtError, [mbOK], 0);
-      Result := 0;
-    end
+  begin
+    MessageDlg('This format is not supported in this feature.', mtError,
+      [mbOK], 0);
+    Result := 0;
+  end
 end;
 
-function EditStreamInCallback(dwCookie: Longint; pbBuff: PByte;
-  cb: Longint; var pcb: Longint): DWORD; stdcall;
+function EditStreamInCallback(dwCookie: Longint; pbBuff: PByte; cb: Longint;
+  var pcb: Longint): DWORD; stdcall;
 var
   theStream: TStream;
-  dataAvail: LongInt;
+  dataAvail: Longint;
 begin
   theStream := TStream(dwCookie);
   with theStream do
@@ -1298,19 +1336,19 @@ begin
     begin
       pcb := Read(pbBuff^, dataAvail);
       if pcb <> dataAvail then
-        result := DWord(E_FAIL);
+        Result := DWORD(E_FAIL);
     end
     else
     begin
       pcb := Read(pbBuff^, cb);
       if pcb <> cb then
-        result := DWord(E_FAIL);
+        Result := DWORD(E_FAIL);
     end;
   end;
 end;
 
-function EditStreamOutCallback(dwCookie: Longint; pbBuff: PByte; cb:
-  Longint; var pcb: Longint): DWORD; stdcall;
+function EditStreamOutCallback(dwCookie: Longint; pbBuff: PByte; cb: Longint;
+  var pcb: Longint): DWORD; stdcall;
 var
   theStream: TStream;
 begin
@@ -1331,23 +1369,23 @@ begin
   begin
     dwCookie := Longint(intoStream);
     dwError := 0;
-    pfnCallback := EditStreamOutCallBack;
+    pfnCallback := EditStreamOutCallback;
   end;
-  Perform(EM_STREAMOUT, SF_RTF or SFF_SELECTION, longint(@editstream));
+  Perform(EM_STREAMOUT, SF_RTF or SFF_SELECTION, Longint(@editstream));
   Result := SelText;
 end;
 
 function TRichEditWB.AddRTFSelection(sourceStream: TStream): Integer;
 var
-  EditStream: TEditStream;
+  editstream: TEditStream;
 begin
-  with EditStream do
+  with editstream do
   begin
     dwCookie := Longint(sourceStream);
     dwError := 0;
-    pfnCallback := EditStreamInCallBack;
+    pfnCallback := EditStreamInCallback;
   end;
-  Perform(EM_STREAMIN, SF_RTF or SFF_SELECTION, longint(@EditStream));
+  Perform(EM_STREAMIN, SF_RTF or SFF_SELECTION, Longint(@editstream));
   Result := Lines.Count;
 end;
 
@@ -1360,7 +1398,7 @@ begin
   begin
     aMemStream := TMemoryStream.Create;
     try
-      aMemStream.Write(str[1], length(str));
+      aMemStream.Write(str[1], Length(str));
       aMemStream.Position := 0;
       AddRTFSelection(aMemStream);
       Result := Lines.Count;
@@ -1372,17 +1410,17 @@ end;
 
 procedure TRichEditWB.AppendRTF(str: string);
 var
-  start, length, eventmask: Integer;
+  start, Length, eventmask: Integer;
 begin
   eventmask := SendMessage(Handle, EM_SETEVENTMASK, 0, 0);
   SendMessage(Handle, WM_SETREDRAW, 0, 0);
   start := SelStart;
-  length := SelLength;
+  Length := SelLength;
   SelLength := 0;
   SelStart := System.Length(Text);
   AddRtfText(str);
   SelStart := start;
-  SelLength := length;
+  SelLength := Length;
   SendMessage(Handle, WM_SETREDRAW, 1, 0);
   InvalidateRect(Handle, nil, True);
   SendMessage(Handle, EM_SETEVENTMASK, 0, eventmask);
@@ -1397,8 +1435,8 @@ begin
   bmpImage := TBitmap.Create();
   try
     ASource.GetBitmap(AImageIndex, bmpImage);
-    BmpImage.Width := ASource.Width + 1;
-    BmpImage.Height := ASource.Height + 1;
+    bmpImage.Width := ASource.Width + 1;
+    bmpImage.Height := ASource.Height + 1;
     TImageDataObject.InsertBitmap(Self, bmpImage);
     Result := Lines.Count;
   finally
@@ -1409,26 +1447,26 @@ end;
 procedure TRichEditWB.WMPaint(var Msg: TWMPaint);
 var
   DC: HDC;
- // R, R1: TRect;
+  // R, R1: TRect;
 begin
   DC := GetDC(Handle);
-  if Transparent = 1 then
-    SetBkMode(DC, Windows.TRANSPARENT)
+  if Transparent = true then
+    SetBkMode(DC, Windows.Transparent)
   else
     SetBkMode(DC, Windows.OPAQUE);
   ReleaseDC(Handle, DC);
- {   if RichEditVersion >= 2 then
+  { if RichEditVersion >= 2 then
     inherited
-  else
-  begin
+    else
+    begin
     if GetUpdateRect(Handle, R, True) then
     begin
-      with ClientRect do
-        R1 := Rect(Right - 3, Top, Right, Bottom);
-      if IntersectRect(R, R, R1) then
-        InvalidateRect(Handle, @R1, True);
+    with ClientRect do
+    R1 := Rect(Right - 3, Top, Right, Bottom);
+    if IntersectRect(R, R, R1) then
+    InvalidateRect(Handle, @R1, True);
     end;
-  end;}inherited
+    end; } inherited
 end;
 
 procedure TRichEditWB.DoSetMaxLength(Value: Integer);
@@ -1438,7 +1476,7 @@ begin
   SendMessage(Handle, EM_EXLIMITTEXT, 0, Value);
 end;
 
-procedure TRichEditWB.SetHideCaret(const Value: Boolean);
+procedure TRichEditWB.SetHideCaret(const Value: boolean);
 begin
   if FHideCaret <> Value then
     FHideCaret := Value;
@@ -1465,11 +1503,11 @@ end;
 procedure TRichEditWB.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
- {   case RichEditVersion of
+  { case RichEditVersion of
     1: CreateSubClass(Params, RICHEDIT_CLASS10A);
-  else
-       CreateSubClass(Params, RICHEDIT_CLASS);
-  end; }
+    else
+    CreateSubClass(Params, RICHEDIT_CLASS);
+    end; }
   Params.Style := Params.Style or WS_CLIPCHILDREN;
   if FRichEditModule = 0 then
   begin
@@ -1490,15 +1528,16 @@ procedure TRichEditWB.SetEditRect;
 var
   Loc: TRect;
 begin
-  SetRect(Loc, FLeftGap, FTopGap, (ClientWidth - 1) - FRightGap, (ClientHeight + 1) - FBottomGap);
-  SendMessage(Handle, EM_SETRECTNP, 0, LongInt(@Loc));
+  SetRect(Loc, fLeftGap, FTopGap, (ClientWidth - 1) - FRightGap,
+    (ClientHeight + 1) - fBottomGap);
+  SendMessage(Handle, EM_SETRECTNP, 0, Longint(@Loc));
 end;
 
 procedure TRichEditWB.setLeftGap(Value: Integer);
 begin
-  if (FLeftGap <> Value) and (Value > -1) then
+  if (fLeftGap <> Value) and (Value > -1) then
   begin
-    FLeftGap := Value;
+    fLeftGap := Value;
     ReCreateWnd;
   end;
 end;
@@ -1523,9 +1562,9 @@ end;
 
 procedure TRichEditWB.setBottomGap(Value: Integer);
 begin
-  if (FBottomGap <> Value) and (Value > -1) then
+  if (fBottomGap <> Value) and (Value > -1) then
   begin
-    FBottomGap := Value;
+    fBottomGap := Value;
     ReCreateWnd;
   end;
 end;
@@ -1554,23 +1593,23 @@ end;
 function TRichEditWB.AddTextByCursor(str: string): Integer;
 var
   Str1: string;
-  i, ui: Integer;
+  I, ui: Integer;
 begin
-  ui := Length(Lines[CaretPos.y]);
-  str1 := Lines[CaretPos.y];
+  ui := Length(Lines[CaretPos.Y]);
+  Str1 := Lines[CaretPos.Y];
   if Pos('<$Cursor$>', str) > 0 then
   begin
-    i := Pos('<$Cursor$>', str);
+    I := Pos('<$Cursor$>', str);
     str := StringReplace(str, '<$Cursor$>', '', [rfReplaceAll, rfIgnoreCase]);
-    i := i - 1 + ui;
+    I := I - 1 + ui;
   end
   else
-    i := -30;
-  System.Insert(str, Str1, CaretPos.x + 1);
-  Lines[CaretPos.y] := str1;
-  if i <> -30 then
+    I := -30;
+  System.Insert(str, Str1, CaretPos.X + 1);
+  Lines[CaretPos.Y] := Str1;
+  if I <> -30 then
   begin
-    SelStart := Perform(EM_LINEINDEX, CaretPos.y, 0) + i;
+    SelStart := Perform(EM_LINEINDEX, CaretPos.Y, 0) + I;
     SetFocus;
   end;
   Result := Lines.Count;
@@ -1591,9 +1630,9 @@ procedure TRichEditWB.SetOffSetsValues(SetTo: Integer);
 var
   Rect: TRect;
 begin
-  SendMessage(Handle, EM_GETRECT, 0, LongInt(@Rect));
+  SendMessage(Handle, EM_GETRECT, 0, Longint(@Rect));
   Rect.Left := SetTo;
-  SendMessage(Handle, EM_SETRECT, 0, LongInt(@Rect));
+  SendMessage(Handle, EM_SETRECT, 0, Longint(@Rect));
   Refresh;
 end;
 
@@ -1618,46 +1657,48 @@ var
 begin
   memory.dwLength := SizeOf(memory);
   GlobalMemoryStatus(memory);
-  ShowMessage('Total memory: ' + IntToStr(memory.dwTotalPhys) + ' Bytes'
-    + #10 + #13 + 'Available memory: ' + IntToStr(memory.dwAvailPhys) + ' Bytes');
+  ShowMessage('Total memory: ' + IntToStr(memory.dwTotalPhys) + ' Bytes' + #10 +
+    #13 + 'Available memory: ' + IntToStr(memory.dwAvailPhys) + ' Bytes');
 end;
 
-function TRichEditWB.IsSeparator(Car: Char): Boolean;
+function TRichEditWB.IsSeparator(Car: Char): boolean;
 begin
   case Car of
-    '.', ';', ',', ':', '!', '"', '''', '^', '+', '-', '*', '/', '\', ' ',
-      '`', '[', ']', '(', ')', '{', '}', '?', '%', '=': Result := True;
+    '.', ';', ',', ':', '!', '"', '''', '^', '+', '-', '*', '/', '\', ' ', '`',
+      '[', ']', '(', ')', '{', '}', '?', '%', '=':
+      Result := True;
   else
     Result := False;
   end;
 end;
 
-function TRichEditWB.GetNextWord(var s: string; var PrevWord: string): string;
+function TRichEditWB.GetNextWord(var S: string; var PrevWord: string): string;
 begin
   Result := '';
   PrevWord := '';
-  if s = '' then
+  if S = '' then
     Exit;
-  while (s <> '') and IsSeparator(s[1]) do
+  while (S <> '') and IsSeparator(S[1]) do
   begin
-    PrevWord := PrevWord + s[1];
-    Delete(s, 1, 1);
+    PrevWord := PrevWord + S[1];
+    Delete(S, 1, 1);
   end;
-  while (s <> '') and not IsSeparator(s[1]) do
+  while (S <> '') and not IsSeparator(S[1]) do
   begin
-    Result := Result + s[1];
-    Delete(s, 1, 1);
+    Result := Result + S[1];
+    Delete(S, 1, 1);
   end;
 end;
 
-function TRichEditWB.IsNumber(s: string): Boolean;
+function TRichEditWB.IsNumber(S: string): boolean;
 var
-  i: Integer;
+  I: Integer;
 begin
   Result := False;
-  for i := 1 to Length(s) do
-    case s[i] of
-      '0'..'9': ;
+  for I := 1 to Length(S) do
+    case S[I] of
+      '0' .. '9':
+        ;
     else
       Exit;
     end;
@@ -1669,11 +1710,11 @@ begin
   Result := Height div (Abs(Self.Font.Height) + 2);
 end;
 
-procedure TRichEditWB.DoHighlightHtml;
+procedure TRichEditWB.DoHighlightHTML;
 var
   ms: TMemoryStream;
 begin
-  if HighlightHTML then
+  if HighLightHTML then
   begin
     HTMLSyn := THighlightHTML.Create;
     try
@@ -1698,7 +1739,7 @@ procedure TRichEditWB.DoHighlightXML;
 var
   ms: TMemoryStream;
 begin
-  if HighlightXML then
+  if HighLightXML then
   begin
     XMLSyn := THighlightXML.Create;
     try
@@ -1736,10 +1777,11 @@ begin
       FillRect(ClipRect);
     end;
   Pic.Canvas.Brush.Style := bsClear;
-  TextBounary := Rect(0, 0, Width * Screen.PixelsPerInch, Height * Screen.PixelsPerInch);
+  TextBounary := Rect(0, 0, Width * Screen.PixelsPerInch,
+    Height * Screen.PixelsPerInch);
   with Range do
   begin
-    hdc := Pic.Canvas.Handle;
+    HDC := Pic.Canvas.Handle;
     hdcTarget := Pic.Canvas.Handle;
     rc := TextBounary;
     rcPage := TextBounary;
@@ -1748,7 +1790,7 @@ begin
   end;
   SendMessage(Handle, EM_FORMATRANGE, 1, Longint(@Range));
   SendMessage(Handle, EM_FORMATRANGE, 0, 0);
-  if not Assigned(fImage) then
+  if not Assigned(FImage) then
   begin
     psd := TSaveDialog.Create(Self);
     psd.FileName := 'EditorImage.bmp';
@@ -1756,8 +1798,8 @@ begin
     try
       if psd.Execute then
         if FileExists(psd.FileName) then
-          if MessageDlg(Format(sOverWrite, [psd.FileName]), mtConfirmation, mbYesNoCancel, 0)
-            <> idYes then
+          if MessageDlg(Format(sOverWrite, [psd.FileName]), mtConfirmation,
+            mbYesNoCancel, 0) <> idYes then
             Exit;
       Pic.SaveToFile(psd.FileName + '.bmp');
     finally
@@ -1810,7 +1852,7 @@ begin
   Undo;
 end;
 
-procedure TRichEditWB.SetHyperLink(Setlink: Boolean; wParam: Integer);
+procedure TRichEditWB.SetHyperlink(Setlink: boolean; wParam: Integer);
 var
   cf: TCharFormat;
 begin
@@ -1828,12 +1870,12 @@ begin
   SendMessage(Handle, EM_SETCHARFORMAT, wParam, Integer(@cf));
 end;
 
-procedure TRichEditWB.SetSelectionHyperLink(Hyperlink: Boolean);
+procedure TRichEditWB.SetSelectionHyperLink(Hyperlink: boolean);
 begin
   SetHyperlink(Hyperlink, SCF_SELECTION);
 end;
 
-procedure TRichEditWB.SetWordHyperLink(Hyperlink: Boolean);
+procedure TRichEditWB.SetWordHyperLink(Hyperlink: boolean);
 begin
   SetHyperlink(Hyperlink, SCF_WORD or SCF_SELECTION);
 end;
@@ -1842,16 +1884,15 @@ procedure TRichEditWB.DoURLClick(const URL: string);
 var
   X: Olevariant;
 begin
-  if fAutoNavigate then
+  if FAutoNavigate then
   begin
     if Assigned(FOnURLClick) then
       OnURLClick(Self, URL)
-    else
-      if Assigned(FEmbeddedWB) then
-      begin
-        FEmbeddedWB.Navigate(Url, X, X, X, X);
-        FEmbeddedWB.SetFocusToDoc;
-      end;
+    else if Assigned(FEmbeddedWB) then
+    begin
+      FEmbeddedWB.Navigate(URL, X, X, X, X);
+      FEmbeddedWB.SetFocusToDoc;
+    end;
   end;
 end;
 
@@ -1860,15 +1901,15 @@ var
   p: TENLink;
   sURL: string;
 begin
-  if fHighlightURL then
+  if FHighlightURL then
   begin
     if (Msg.NMHdr^.code = EN_LINK) then
     begin
-      p := TENLink(Pointer(Msg.NMHdr)^);
+      p := TENLink(pointer(Msg.NMHdr)^);
       if (p.Msg = WM_LBUTTONDOWN) then
       begin
         try
-          SendMessage(Handle, EM_EXSETSEL, 0, Longint(@(p.chrg)));
+          SendMessage(Handle, EM_EXSETSEL, 0, NativeInt(@(p.chrg)));
           sURL := SelText;
           DoURLClick(sURL);
         except
@@ -1880,15 +1921,15 @@ begin
 end;
 
 procedure TRichEditWB.CreateWnd;
-{var
-   mask: Word;}
+{ var
+  mask: Word; }
 begin
   inherited CreateWnd;
   Modified := FModified;
-  if fHighlightURL then
+  if FHighlightURL then
     SendMessage(Handle, EM_AUTOURLDETECT, 1, 0);
- //  mask := SendMessage(Handle, EM_GETEVENTMASK, 0, 0);
-//   SendMessage(Handle, EM_SETEVENTMASK, 0, mask or ENM_LINK);
+  // mask := SendMessage(Handle, EM_GETEVENTMASK, 0, 0);
+  // SendMessage(Handle, EM_SETEVENTMASK, 0, mask or ENM_LINK);
   SendMessage(Handle, EM_SETBKGNDCOLOR, 0, ColorToRGB(Color));
 
   DoSetMaxLength(MaxLength);
@@ -1909,11 +1950,11 @@ procedure TRichEditWB.WndProc(var Msg: TMessage);
   end;
 
 begin
-  if FHideCaret and not (csDesigning in ComponentState) then
+  if FHideCaret and not(csDesigning in ComponentState) then
   begin
     case Msg.Msg of
-      WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE,
-        WM_LBUTTONDBLCLK, WM_CHAR, WM_KEYUP:
+      WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_LBUTTONDBLCLK,
+        WM_CHAR, WM_KEYUP:
         begin
           Msg.Result := 0;
           if Msg.Msg = WM_LBUTTONDOWN then
@@ -1923,7 +1964,7 @@ begin
         end;
       WM_KEYDOWN:
         begin
-          case Msg.WParam of
+          case Msg.wParam of
             VK_DOWN:
               Scroll(WM_VSCROLL, SB_LINEDOWN);
             VK_UP:
@@ -1957,20 +1998,20 @@ begin
     ControlStyle := ControlStyle + [csAcceptsControls];
   end;
   CompCount := 0;
-  fAcceptDragComponnents := True;
-  fAcceptDragFiles := True;
-  fAutoNavigate := True;
-  FBottomGap := 0;
-  fFileName := sUntitled;
-  fHideCaret := False;
-  fHighlightURL := True;
-  fHTMLHighlight := True;
+  FAcceptDragComponnents := True;
+  FAcceptDragFiles := True;
+  FAutoNavigate := True;
+  fBottomGap := 0;
+  FFileName := sUntitled;
+  FHideCaret := False;
+  FHighlightURL := True;
+  FHTMLHighlight := True;
   fLeftGap := 0;
-  fMoreThen64KB := False;
-  fRightGap := 0;
-  fStream := TMemoryStream.Create;
-  fTopGap := 0;
-  fXMLHighlight := True;
+  FMoreThen64KB := False;
+  FRightGap := 0;
+  FStream := TMemoryStream.Create;
+  FTopGap := 0;
+  FXMLHighlight := True;
   ScrollBars := ssBoth;
   ShowHint := True;
   WordWrap := True;
@@ -1982,7 +2023,7 @@ end;
 
 function TRichEditWB.GetPopupMenu: TPopupMenu;
 var
-  canCopy: Boolean;
+  canCopy: boolean;
 begin
   Result := inherited GetPopupMenu;
   canCopy := SelText <> '';
@@ -2003,17 +2044,21 @@ begin
         Add(NewItem('Select All', 0, False, True, SelAll, 5, 'MenuItem5'));
         Add(NewLine);
         Add(NewItem('Clear', 0, False, True, ClearAll, 6, 'MenuItem6'));
-        Add(NewItem('Clear Selection', 0, False, canCopy, ClearSel, 7, 'MenuItem7'));
+        Add(NewItem('Clear Selection', 0, False, canCopy, ClearSel, 7,
+          'MenuItem7'));
         Add(NewLine);
         Add(NewItem('Find', 0, False, True, FindDialog, 8, 'MenuItem8'));
         Add(NewLine);
-        if fXMLHighlight then
-          Add(NewItem('HighLight XML', 0, False, True, DoXMLrc, 9, 'MenuItem9'));
-        if fHTMLHighlight then
-          Add(NewItem('HighLight HTML', 0, False, True, DoHTMLrc, 10, 'MenuItem10'));
+        if FXMLHighlight then
+          Add(NewItem('HighLight XML', 0, False, True, DoXMLrc, 9,
+            'MenuItem9'));
+        if FHTMLHighlight then
+          Add(NewItem('HighLight HTML', 0, False, True, DoHTMLrc, 10,
+            'MenuItem10'));
         Add(NewLine);
         Add(NewItem('Print', 0, False, True, Prnt, 12, 'MenuItem12'));
-        Add(NewItem('Print Selected Text', 0, False, canCopy, PrintSel, 13, 'MenuItem13'));
+        Add(NewItem('Print Selected Text', 0, False, canCopy, PrintSel, 13,
+          'MenuItem13'));
         PostMessage(Handle, WM_NULL, 0, 0);
       end;
       Result := FPopupVerbMenu;
@@ -2027,14 +2072,14 @@ var
   XSel: ^TCharRange absolute ISel;
 begin
   inherited;
-  ISel := Message.LParam;
+  ISel := Message.LPARAM;
   FSelection := XSel^;
 end;
 
 procedure TRichEditWB.EMReplaceSel(var Message: TMessage);
 begin
   inherited;
-  FMax := FSelection.cpMax + length(PChar(Message.LParam));
+  FMax := FSelection.cpMax + Length(PChar(Message.LPARAM));
 end;
 
 function TRichEditWB.GetSelStart: Integer;
@@ -2050,41 +2095,37 @@ end;
 
 procedure TRichEditWB.SetTextAlignment(al: TAlignment);
 begin
-  Paragraph.Alignment := al;
+  Paragraph.alignment := al;
 end;
 
-procedure TRichEditWB.SetThemes(thm: TThemes);
+procedure TRichEditWB.SetThemes(Thm: TThemes);
 begin
   Themes := Thm;
   if Thm = tBlack then
   begin
-    color := clBlack;
+    Color := clBlack;
     Font.Color := clWhite;
   end
-  else
-    if Thm = tAluminum then
-    begin
-      color := clSilver;
-      Font.Color := clWhite;
-    end
-    else
-      if Thm = tLight then
-      begin
-        color := clInfoBk;
-        Font.Color := clBlack;
-      end
-      else
-        if Thm = tXP then
-        begin
-          color := RGB(237, 242, 251);
-          Font.Color := clBlack;
-        end
-        else
-          if Thm = tDefault then
-          begin
-            color := clWindow;
-            Font.Color := clBlack;
-          end;
+  else if Thm = tAluminum then
+  begin
+    Color := clSilver;
+    Font.Color := clWhite;
+  end
+  else if Thm = tLight then
+  begin
+    Color := clInfoBk;
+    Font.Color := clBlack;
+  end
+  else if Thm = tXP then
+  begin
+    Color := RGB(237, 242, 251);
+    Font.Color := clBlack;
+  end
+  else if Thm = tDefault then
+  begin
+    Color := clWindow;
+    Font.Color := clBlack;
+  end;
 
 end;
 
@@ -2092,13 +2133,13 @@ procedure TRichEditWB.Loaded;
 begin
   inherited Loaded;
   FMyCallback := TRichEditOleCallback.Create;
-  REOleSetCallback(Self, FMyCallBack);
+  REOleSetCallback(Self, FMyCallback);
   SetTextAlignment(TextAlignment);
   SetThemes(FThemes);
- // if assigned(Fstatusbar) then OldStatusBarW := Fstatusbar.Panels[0].Width;
+  // if assigned(Fstatusbar) then OldStatusBarW := Fstatusbar.Panels[0].Width;
   UpdateInfo;
   DragAcceptFiles(Handle, True);
-  if fMoreThen64KB then
+  if FMoreThen64KB then
     SendMessage(Handle, EM_EXLIMITTEXT, 0, $7FFFFFF0);
   if ShowHint then
     SetModified(True);
@@ -2109,7 +2150,7 @@ end;
 
 destructor TRichEditWB.Destroy;
 begin
- // Fstatusbar.Panels[0].Width := OldStatusBarW;
+  // Fstatusbar.Panels[0].Width := OldStatusBarW;
   FMyCallback.Free;
   FStream.Free;
   inherited Destroy;
@@ -2125,14 +2166,14 @@ begin
   inherited;
 end;
 
-function TRichEditWB.GetModified: Boolean;
+function TRichEditWB.GetModified: boolean;
 begin
   Result := FModified;
   if HandleAllocated then
     Result := SendMessage(Handle, EM_GETMODIFY, 0, 0) <> 0;
 end;
 
-function TRichEditWB.GetCanUndo: Boolean;
+function TRichEditWB.GetCanUndo: boolean;
 begin
   Result := False;
   if HandleAllocated then
@@ -2147,7 +2188,7 @@ begin
   try
     fd.Font.Assign(SelAttributes);
 
-    if Fd.Execute then
+    if fd.Execute then
       Font.Assign(fd.Font);
     SetFocus;
   finally
@@ -2261,55 +2302,57 @@ begin
     NumLockKey := 'NumLock: Off';
 end;
 
-procedure TRichEditWB.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-{var
-   CurPos: TPoint;
-   Popup : TPopupMenu;  }
+procedure TRichEditWB.MouseDown(Button: TMouseButton; Shift: TShiftState;
+  X, Y: Integer);
+{ var
+  CurPos: TPoint;
+  Popup : TPopupMenu; }
 begin
   UpdateInfo;
   LineIndex := Perform(EM_LINEFROMCHAR, SelStart, 0);
-  {if not Assigned(PopupMenu) then
+  { if not Assigned(PopupMenu) then
     begin
-     if button = mbRight then
-      begin
-      Popup := TPopupMenu.Create(self);
-      PopupMenu := Popup;
-       with popup do
-       begin
-           Items.Clear;
-           CleanupInstance;
-           GetCursorPos(CurPos);
-           Popup(CurPos.x, CurPos.y);
-         with Items do
-         begin
-           Add(NewItem('Undo',0, False, True, UndoLast, 0, 'MenuItem0'));
-           Add(NewLine);
-           Add(NewItem('Cut', 0, False, True, CutSel, 2, 'MenuItem2'));
-           Add(NewItem('Copy', 0, False, True, CopySel, 3, 'MenuItem3'));
-           Add(NewItem('Paste', 0, False, True, PasteSel, 4, 'MenuItem4'));
-           Add(NewItem('Select All', 0, False, True, SelAll, 5, 'MenuItem5'));
-           Add(NewLine);
-           Add(NewItem('Clear', 0, False, True, ClearAll, 6, 'MenuItem6'));
-           Add(NewItem('Clear Selection', 0, False, True, ClearSel, 7, 'MenuItem7'));
-           Add(NewLine);
-           Add(NewItem('Find', 0, False, True, FindDialog, 8, 'MenuItem8'));
-           Add(NewLine);
-           if fXMLHighlight then
-           Add(NewItem('HighLight XML', 0, False, True, DoXMLrc, 9, 'MenuItem9'));
-           if fHTMLHighlight then
-           Add(NewItem('HighLight HTML', 0, False, True, DoHTMLrc, 10, 'MenuItem10'));
-           Add(NewLine);
-           Add(NewItem('Print', 0, False, True, Prnt, 12, 'MenuItem12'));
-           Add(NewItem('Print Selected Text', 0, False, True, PrintSel, 13, 'MenuItem13'));
-         end;
-       end;
-       PostMessage(Handle, WM_NULL, 0, 0);
-     end;
-   end;  }
+    if button = mbRight then
+    begin
+    Popup := TPopupMenu.Create(self);
+    PopupMenu := Popup;
+    with popup do
+    begin
+    Items.Clear;
+    CleanupInstance;
+    GetCursorPos(CurPos);
+    Popup(CurPos.x, CurPos.y);
+    with Items do
+    begin
+    Add(NewItem('Undo',0, False, True, UndoLast, 0, 'MenuItem0'));
+    Add(NewLine);
+    Add(NewItem('Cut', 0, False, True, CutSel, 2, 'MenuItem2'));
+    Add(NewItem('Copy', 0, False, True, CopySel, 3, 'MenuItem3'));
+    Add(NewItem('Paste', 0, False, True, PasteSel, 4, 'MenuItem4'));
+    Add(NewItem('Select All', 0, False, True, SelAll, 5, 'MenuItem5'));
+    Add(NewLine);
+    Add(NewItem('Clear', 0, False, True, ClearAll, 6, 'MenuItem6'));
+    Add(NewItem('Clear Selection', 0, False, True, ClearSel, 7, 'MenuItem7'));
+    Add(NewLine);
+    Add(NewItem('Find', 0, False, True, FindDialog, 8, 'MenuItem8'));
+    Add(NewLine);
+    if fXMLHighlight then
+    Add(NewItem('HighLight XML', 0, False, True, DoXMLrc, 9, 'MenuItem9'));
+    if fHTMLHighlight then
+    Add(NewItem('HighLight HTML', 0, False, True, DoHTMLrc, 10, 'MenuItem10'));
+    Add(NewLine);
+    Add(NewItem('Print', 0, False, True, Prnt, 12, 'MenuItem12'));
+    Add(NewItem('Print Selected Text', 0, False, True, PrintSel, 13, 'MenuItem13'));
+    end;
+    end;
+    PostMessage(Handle, WM_NULL, 0, 0);
+    end;
+    end; }
   inherited;
 end;
 
-procedure TRichEditWB.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TRichEditWB.MouseUp(Button: TMouseButton; Shift: TShiftState;
+  X, Y: Integer);
 begin
   inherited;
 end;
@@ -2331,8 +2374,8 @@ const
   KEY_CTRL_S = 19;
   KEY_CTRL_U = 21;
 begin
-  if (Ord(Key) = KEY_CTRL_B) or (Ord(Key) = KEY_CTRL_I) or (Ord(Key) = KEY_CTRL_S)
-    or (Ord(Key) = KEY_CTRL_U) then
+  if (Ord(Key) = KEY_CTRL_B) or (Ord(Key) = KEY_CTRL_I) or
+    (Ord(Key) = KEY_CTRL_S) or (Ord(Key) = KEY_CTRL_U) then
   begin
     with SelAttributes do
       case Ord(Key) of
@@ -2363,10 +2406,10 @@ begin
         KEY_CTRL_U:
           begin
             Key := #0;
-            if fsUnderline in Style then
-              Style := Style - [fsUnderline]
+            if fsUnderLine in Style then
+              Style := Style - [fsUnderLine]
             else
-              Style := Style + [fsUnderline];
+              Style := Style + [fsUnderLine];
           end;
       end;
   end;
@@ -2374,23 +2417,21 @@ begin
   begin
     SelectAll;
   end
-  else
-    if (Ord(Key) = KEY_CTRL_F) then
-    begin
-      Find;
-    end
-    else
-      if (Ord(Key) = KEY_CTRL_P) then
-      begin
-        PrintAll;
-      end;
+  else if (Ord(Key) = KEY_CTRL_F) then
+  begin
+    Find;
+  end
+  else if (Ord(Key) = KEY_CTRL_P) then
+  begin
+    PrintAll;
+  end;
 end;
 
 function TRichEditWB.SelectLine(Index: Integer): boolean;
 var
   StartPos, endPos: Integer;
 begin
-  result := False;
+  Result := False;
   if Index < 0 then
     Exit;
   StartPos := Perform(EM_LINEINDEX, Index, 0);
@@ -2400,7 +2441,7 @@ begin
     if endPos = -1 then
       endPos := StartPos + Perform(EM_LINELENGTH, StartPos, 0);
     Perform(EM_SETSEL, StartPos, endPos);
-    result := True;
+    Result := True;
   end;
 end;
 
@@ -2408,11 +2449,12 @@ function TRichEditWB.GetSelectedText(var SelectedText: string): boolean;
 begin
   SelectedText := SelText;
   if SelectedText <> '' then
-    result := True
+    Result := True
   else
   begin
-    MessageDlg('Please select text before using this feature.', mtError, [mbOK], 0);
-    result := False;
+    MessageDlg('Please select text before using this feature.', mtError,
+      [mbOK], 0);
+    Result := False;
   end;
 end;
 
@@ -2423,8 +2465,7 @@ begin
   if GetSelectedText(em_body) then
   begin
     em_subject := 'Check it out please.';
-    em_mail := 'mailto:?subject=' +
-      em_subject + '&body=' + em_body;
+    em_mail := 'mailto:?subject=' + em_subject + '&body=' + em_body;
     ShellExecute(Handle, 'open', PChar(em_mail), nil, nil, SW_SHOWNORMAL);
   end;
 end;
@@ -2437,17 +2478,17 @@ begin
   if em_body <> '' then
   begin
     em_subject := 'Check it out please.';
-    em_mail := 'mailto:?subject=' +
-      em_subject + '&body=' + em_body;
+    em_mail := 'mailto:?subject=' + em_subject + '&body=' + em_body;
     ShellExecute(Handle, 'open', PChar(em_mail), nil, nil, SW_SHOWNORMAL);
   end
   else
-    MessageDlg('Please enter text before using this feature.', mtError, [mbOK], 0);
+    MessageDlg('Please enter text before using this feature.', mtError,
+      [mbOK], 0);
 end;
 
 function TRichEditWB.GetLineCount: Integer;
 begin
-  GetLineCount := lines.Count;
+  GetLineCount := Lines.Count;
 end;
 
 function TRichEditWB.AddDateAndTime: Integer;
@@ -2465,28 +2506,28 @@ end;
 
 procedure TRichEditWB.AlignText(alignment: TAlignment);
 begin
-  Paragraph.Alignment := alignment;
+  Paragraph.alignment := alignment;
 end;
 
 function TRichEditWB.ChangeToANSIChangeCase(const S: string): string;
 var
-  i: Integer;
-  Up: ANSIChar;
+  I: Integer;
+  Up: AnsiChar;
 begin
 
   Result := S;
-  for i := 1 to Length(Result) do
+  for I := 1 to Length(Result) do
   begin
-    Up := ANSIChar(ANSIUpperCase(Result[i])[1]);
-    if ANSIChar(Result[i]) = Up then
-      Result[i] := (ANSILowerCase(Result[i])[1])
+    Up := AnsiChar(ANSIUpperCase(Result[I])[1]);
+    if AnsiChar(Result[I]) = Up then
+      Result[I] := (ANSILowerCase(Result[I])[1])
     else
-      Result[i] := ANSIUpperCase(Result[i])[1];
+      Result[I] := ANSIUpperCase(Result[I])[1];
   end;
 end;
 
-function TRichEditWB.AddFormatedText(const txt: string; Bold, Italic, Strikeout,
-  Underline: boolean; txtColor: TColor): Integer;
+function TRichEditWB.AddFormatedText(const txt: string;
+  Bold, Italic, Strikeout, Underline: boolean; txtColor: TColor): Integer;
 begin
   with SelAttributes do
   begin
@@ -2503,9 +2544,9 @@ begin
     else
       Style := Style - [fsStrikeout];
     if Underline then
-      Style := Style + [fsUnderline]
+      Style := Style + [fsUnderLine]
     else
-      Style := Style - [fsUnderline];
+      Style := Style - [fsUnderLine];
     Color := txtColor;
   end;
   SelText := (txt);
@@ -2520,7 +2561,7 @@ begin
     Style := Style - [fsBold];
     Style := Style - [fsItalic];
     Style := Style - [fsStrikeout];
-    Style := Style - [fsUnderline];
+    Style := Style - [fsUnderLine];
     Color := clBlack;
   end;
   Result := Lines.Count;
@@ -2537,7 +2578,7 @@ var
   pf2: ParaFormat2;
 begin
   FillChar(pf2, SizeOf(pf2), 0);
-  pf2.cbSize := SizeOf(PARAFORMAT2);
+  pf2.cbSize := SizeOf(ParaFormat2);
   pf2.dwMask := PFM_LINESPACING;
   pf2.bLineSpacingRule := lineSpacing;
   SendMessage(Handle, EM_SETPARAFORMAT, 0, Longint(@pf2));
@@ -2563,30 +2604,31 @@ begin
     begin
       printresX := GetDeviceCaps(Handle, LOGPIXELSX);
       printresY := GetDeviceCaps(Handle, LOGPIXELSY);
-      printarea := Rect(printresX, printresY * 3 div 2, Printer.PageWidth -
-        printresX, Printer.PageHeight - printresY * 3 div 2);
+      printarea := Rect(printresX, printresY * 3 div 2,
+        Printer.PageWidth - printresX, Printer.PageHeight - printresY *
+        3 div 2);
       richedit_outputarea := Rect(printarea.Left * 1440 div printresX,
-        printarea.Top * 1440 div printresY, printarea.Right * 1440 div printresX,
+        printarea.Top * 1440 div printresY,
+        printarea.Right * 1440 div printresX,
         printarea.Bottom * 1440 div printresY);
-      fmtRange.hDC := Handle;
+      fmtRange.HDC := Handle;
       fmtRange.hdcTarget := Handle;
       fmtRange.rc := richedit_outputarea;
       fmtRange.rcPage := Rect(0, 0, Printer.PageWidth * 1440 div printresX,
         Printer.PageHeight * 1440 div printresY);
-      fmtRange.chrg.cpMin := selstart;
-      fmtRange.chrg.cpMax := selStart + sellength - 1;
+      fmtRange.chrg.cpMin := SelStart;
+      fmtRange.chrg.cpMax := SelStart + SelLength - 1;
       S := SelText;
-      while (fmtRange.chrg.cpMax > 0) and
-        (S[fmtRange.chrg.cpMax] <= ' ') do
+      while (fmtRange.chrg.cpMax > 0) and (S[fmtRange.chrg.cpMax] <= ' ') do
         Dec(fmtRange.chrg.cpMax);
       repeat
         nextChar := Perform(EM_FORMATRANGE, 1, Longint(@fmtRange));
-        if nextchar < fmtRange.chrg.cpMax then
+        if nextChar < fmtRange.chrg.cpMax then
         begin
-          printer.newPage;
+          Printer.newPage;
           fmtRange.chrg.cpMin := nextChar;
         end;
-      until nextchar >= fmtRange.chrg.cpMax;
+      until nextChar >= fmtRange.chrg.cpMax;
       Perform(EM_FORMATRANGE, 0, 0);
     end;
   finally
@@ -2596,20 +2638,20 @@ end;
 
 function TRichEditWB.SearchForTextAndSelect(SearchText: string): string;
 var
-  StartPos, Position, endpos: Integer;
+  StartPos, Position, endPos: Integer;
 begin
   StartPos := 0;
-  endpos := Length(Text);
+  endPos := Length(Text);
   Lines.beginUpdate;
-  while FindText(SearchText, StartPos, endpos, [stMatchCase]) <> -1 do
+  while FindText(SearchText, StartPos, endPos, [stMatchCase]) <> -1 do
   begin
-    endpos := Length(Text) - startpos;
-    Position := FindText(SearchText, StartPos, endpos, [stMatchCase]);
+    endPos := Length(Text) - StartPos;
+    Position := FindText(SearchText, StartPos, endPos, [stMatchCase]);
     Inc(StartPos, Length(SearchText));
     SetFocus;
     SelStart := Position;
     SelLength := Length(SearchText);
-    result := SelText;
+    Result := SelText;
   end;
   Lines.endUpdate;
 end;
@@ -2617,16 +2659,16 @@ end;
 procedure TRichEditWB.FindDialogFind(Sender: TObject);
 var
   S: string;
-  startpos: Integer;
+  StartPos: Integer;
 begin
   SelStart := 0;
   with TFindDialog(Sender) do
   begin
     if FSelPos = 0 then
       Options := Options - [frFindNext];
-    if frfindNext in Options then
+    if frFindNext in Options then
     begin
-      StartPos := FSelPos + Length(Findtext);
+      StartPos := FSelPos + Length(FindText);
       S := Copy(Lines.Text, StartPos, MaxInt);
     end
     else
@@ -2644,7 +2686,7 @@ begin
     end
     else
     begin
-      if frfindNext in Options then
+      if frFindNext in Options then
         S := Concat('There are no further occurences of "', FindText, '".')
       else
         S := Concat('Could not find "', FindText, '".');
@@ -2663,12 +2705,13 @@ begin
     try
       f := TFindDialog.Create(Self);
       f.OnFind := FindDialogFind;
-      F.Execute;
+      f.Execute;
     finally
     end;
   end
   else
-    MessageDlg('You can not use this feature after inserting files.', mtError, [mbOK], 0);
+    MessageDlg('You can not use this feature after inserting files.', mtError,
+      [mbOK], 0);
 end;
 
 procedure TRichEditWB.FindDialog(Sender: TObject);
@@ -2681,12 +2724,13 @@ begin
     try
       f := TFindDialog.Create(Self);
       f.OnFind := FindDialogFind;
-      F.Execute;
+      f.Execute;
     finally
     end;
   end
   else
-    MessageDlg('You can not use this feature after inserting files.', mtError, [mbOK], 0);
+    MessageDlg('You can not use this feature after inserting files.', mtError,
+      [mbOK], 0);
 end;
 
 procedure TRichEditWB.ReplaceDialogReplace(Sender: TObject);
@@ -2708,7 +2752,7 @@ begin
       SelText := ReplaceText;
     end
     else
-      MessageDlg('Could not find "' + FindText + '".', mtError, [mbOk], 0);
+      MessageDlg('Could not find "' + FindText + '".', mtError, [mbOK], 0);
   end;
 end;
 
@@ -2727,7 +2771,8 @@ begin
     end;
   end
   else
-    MessageDlg('You can not use this feature after inserting files.', mtError, [mbOK], 0);
+    MessageDlg('You can not use this feature after inserting files.', mtError,
+      [mbOK], 0);
 end;
 
 procedure TRichEditWB.GoToPosition(LineNumber, CharNumber: Word);
@@ -2751,30 +2796,31 @@ begin
     begin
       printresX := GetDeviceCaps(Handle, LOGPIXELSX);
       printresY := GetDeviceCaps(Handle, LOGPIXELSY);
-      printarea := Rect(printresX, printresY * 3 div 2, Printer.PageWidth -
-        printresX, Printer.PageHeight - printresY * 3 div 2);
+      printarea := Rect(printresX, printresY * 3 div 2,
+        Printer.PageWidth - printresX, Printer.PageHeight - printresY *
+        3 div 2);
       richedit_outputarea := Rect(printarea.Left * 1440 div printresX,
-        printarea.Top * 1440 div printresY, printarea.Right * 1440 div printresX,
+        printarea.Top * 1440 div printresY,
+        printarea.Right * 1440 div printresX,
         printarea.Bottom * 1440 div printresY);
-      fmtRange.hDC := Handle;
+      fmtRange.HDC := Handle;
       fmtRange.hdcTarget := Handle;
       fmtRange.rc := richedit_outputarea;
       fmtRange.rcPage := Rect(0, 0, Printer.PageWidth * 1440 div printresX,
         Printer.PageHeight * 1440 div printresY);
-      fmtRange.chrg.cpMin := selstart;
-      fmtRange.chrg.cpMax := selStart + sellength - 1;
+      fmtRange.chrg.cpMin := SelStart;
+      fmtRange.chrg.cpMax := SelStart + SelLength - 1;
       S := SelText;
-      while (fmtRange.chrg.cpMax > 0) and
-        (S[fmtRange.chrg.cpMax] <= ' ') do
+      while (fmtRange.chrg.cpMax > 0) and (S[fmtRange.chrg.cpMax] <= ' ') do
         Dec(fmtRange.chrg.cpMax);
       repeat
         nextChar := Perform(EM_FORMATRANGE, 1, Longint(@fmtRange));
-        if nextchar < fmtRange.chrg.cpMax then
+        if nextChar < fmtRange.chrg.cpMax then
         begin
-          printer.newPage;
+          Printer.newPage;
           fmtRange.chrg.cpMin := nextChar;
         end;
-      until nextchar >= fmtRange.chrg.cpMax;
+      until nextChar >= fmtRange.chrg.cpMax;
       Perform(EM_FORMATRANGE, 0, 0);
     end;
   finally
@@ -2791,15 +2837,15 @@ begin
   Screen.Cursor := crHourglass;
   begin
     X := 0;
-    Toend := length(Text);
-    X := FindText(inSearch, X, Toend, []);
+    Toend := Length(Text);
+    X := FindText(InSearch, X, Toend, []);
     while X <> -1 do
     begin
       SetFocus;
       SelStart := X;
-      SelLength := length(inSearch);
+      SelLength := Length(InSearch);
       SelText := InReplace;
-      X := FindText(inSearch, X + length(InReplace), Toend, []);
+      X := FindText(InSearch, X + Length(InReplace), Toend, []);
     end;
   end;
   Screen.Cursor := oldCursor;
@@ -2818,7 +2864,7 @@ function TRichEditWB.GetRTFText: string;
 begin
   FStream.Clear;
   Lines.SaveToStream(FStream);
-  Result := PChar(FStream.Memory);
+  Result := PChar(FStream.memory);
 end;
 
 procedure TRichEditWB.PreviewInBrowser;
@@ -2839,16 +2885,17 @@ begin
     end;
   end
   else
-    MessageDlg('You must assign a TEmbeddedWB before using this feature.', mtError, [MbOk], 0);
+    MessageDlg('You must assign a TEmbeddedWB before using this feature.',
+      mtError, [mbOK], 0);
 end;
 
 function TRichEditWB.GetRTFTextToString: string;
 var
-  ss: TStringStream;
+  ss: TstringStream;
   EmptyStr: string;
 begin
   EmptyStr := '';
-  ss := TStringStream.Create(EmptyStr);
+  ss := TstringStream.Create(EmptyStr);
   try
     PlainText := False;
     Lines.SaveToStream(ss);
@@ -2883,7 +2930,8 @@ begin
     end;
   end
   else
-    MessageDlg('You must assign a TEmbeddedWB before using this feature.', mtError, [MbOk], 0);
+    MessageDlg('You must assign a TEmbeddedWB before using this feature.',
+      mtError, [mbOK], 0);
 end;
 
 procedure TRichEditWB.LoadHTMLFromBrowser;
@@ -2895,14 +2943,15 @@ begin
     while EmbeddedWB.ReadyState <> READYSTATE_COMPLETE do
       Forms.Application.ProcessMessages;
     if Assigned(EmbeddedWB.document) then
-      Lines.Add(EmbeddedWB.OleObject.Document.documentElement.innerHTML);
-    fFileName := EmbeddedWB.LocationName;
+      Lines.Add(EmbeddedWB.OleObject.document.documentElement.innerHTML);
+    FFileName := EmbeddedWB.LocationName;
     UpdateInfo;
     ScrollToTop;
     SelStart := Perform(EM_LINEINDEX, 1, 1);
   end
   else
-    MessageDlg('You must assign a TEmbeddedWB before using this feature.', mtError, [MbOk], 0);
+    MessageDlg('You must assign a TEmbeddedWB before using this feature.',
+      mtError, [mbOK], 0);
 end;
 
 procedure TRichEditWB.LoadTextFromBrowser;
@@ -2914,14 +2963,15 @@ begin
     while EmbeddedWB.ReadyState <> READYSTATE_COMPLETE do
       Forms.Application.ProcessMessages;
     if Assigned(EmbeddedWB.document) then
-      Lines.Add(EmbeddedWB.OleObject.Document.documentElement.innerText);
-    fFileName := EmbeddedWB.LocationName;
+      Lines.Add(EmbeddedWB.OleObject.document.documentElement.innerText);
+    FFileName := EmbeddedWB.LocationName;
     UpdateInfo;
     ScrollToTop;
     SelStart := Perform(EM_LINEINDEX, 1, 1);
   end
   else
-    MessageDlg('You should Assign A web Browser before using this feature!', mtError, [MbOk], 0);
+    MessageDlg('You should Assign A web Browser before using this feature!',
+      mtError, [mbOK], 0);
 end;
 
 procedure TRichEditWB.LoadStringsFromBrowser;
@@ -2933,13 +2983,14 @@ begin
     while EmbeddedWB.ReadyState <> READYSTATE_COMPLETE do
       Forms.Application.ProcessMessages;
     EmbeddedWB.SaveToStrings(Lines);
-    fFileName := EmbeddedWB.LocationName;
+    FFileName := EmbeddedWB.LocationName;
     UpdateInfo;
     ScrollToTop;
     SelStart := Perform(EM_LINEINDEX, 1, 1);
   end
   else
-    MessageDlg('You should Assign A web Browser before using this feature!', mtError, [MbOk], 0);
+    MessageDlg('You should Assign A web Browser before using this feature!',
+      mtError, [mbOK], 0);
 end;
 
 procedure TRichEditWB.LoadAsCopyFromBrowser;
@@ -2953,13 +3004,14 @@ begin
     EmbeddedWB.SelectAll;
     EmbeddedWB.Copy;
     PasteFromClipboard;
-    fFileName := EmbeddedWB.LocationName;
+    FFileName := EmbeddedWB.LocationName;
     UpdateInfo;
     ScrollToTop;
     SelStart := Perform(EM_LINEINDEX, 1, 1);
   end
   else
-    MessageDlg('You should Assign A web Browser before using this feature!', mtError, [MbOk], 0);
+    MessageDlg('You should Assign A web Browser before using this feature!',
+      mtError, [mbOK], 0);
 end;
 
 procedure TRichEditWB.ScrollToTop;
@@ -3030,7 +3082,7 @@ begin
   fmt.wNumberingStart := 1;
   fmt.wNumberingStyle := $200;
   fmt.wNumberingTab := 1440 div 4;
-  Perform(EM_SETPARAFORMAT, 0, lParam(@fmt));
+  Perform(EM_SETPARAFORMAT, 0, LPARAM(@fmt));
   Result := Lines.Count;
 end;
 
@@ -3050,8 +3102,8 @@ begin
     wNumberingStyle := $200;
     wNumberingTab := 1440 div 4;
   end;
-  Perform(EM_SETPARAFORMAT, 0, lParam(@fmt));
-  selStart := 0;
+  Perform(EM_SETPARAFORMAT, 0, LPARAM(@fmt));
+  SelStart := 0;
   Result := Lines.Count;
 end;
 
@@ -3071,19 +3123,19 @@ begin
     wNumberingStyle := $200;
     wNumberingTab := 1440 div 4;
   end;
-  Perform(EM_SETPARAFORMAT, 0, lParam(@fmt));
-  selStart := 0;
+  Perform(EM_SETPARAFORMAT, 0, LPARAM(@fmt));
+  SelStart := 0;
   Result := Lines.Count;
 end;
 
-function TRichEditWB.AddCheckBox(cbCaption, cbName: string; reLeft, cbLeft,
-  cbTop: Integer; Chk: Boolean): Integer;
+function TRichEditWB.AddCheckBox(cbCaption, cbName: string;
+  reLeft, cbLeft, cbTop: Integer; Chk: boolean): Integer;
 var
   cb: TCheckBox;
 begin
   if AcceptDragComponnents then
   begin
-    Self.Left := RELeft;
+    Self.Left := reLeft;
     cb := TCheckBox.Create(Self);
     with cb do
     begin
@@ -3093,7 +3145,7 @@ begin
       Top := cbTop;
       Parent := Self;
       Checked := Chk;
-      inc(CompCount);
+      Inc(CompCount);
       Result := CompCount;
     end;
   end
@@ -3101,13 +3153,14 @@ begin
     Result := 0;
 end;
 
-function TRichEditWB.AddEditBox(eText, eName: string; reLeft, eLeft, eTop: Integer): Integer;
+function TRichEditWB.AddEditBox(eText, eName: string;
+  reLeft, eLeft, eTop: Integer): Integer;
 var
   E: TEdit;
 begin
   if AcceptDragComponnents then
   begin
-    Self.Left := RELeft;
+    Self.Left := reLeft;
     E := TEdit.Create(Self);
     with E do
     begin
@@ -3116,7 +3169,7 @@ begin
       Left := eLeft;
       Top := eTop;
       Parent := Self;
-      inc(CompCount);
+      Inc(CompCount);
       Result := CompCount;
     end;
   end
@@ -3124,8 +3177,8 @@ begin
     Result := 0;
 end;
 
-function TRichEditWB.AddRadioButton(rbCaption, rbName: string; reLeft, rbLeft,
-  rbTop: Integer; Chk: boolean): Integer;
+function TRichEditWB.AddRadioButton(rbCaption, rbName: string;
+  reLeft, rbLeft, rbTop: Integer; Chk: boolean): Integer;
 var
   RB: TRadioButton;
 begin
@@ -3141,7 +3194,7 @@ begin
       Top := rbTop;
       Parent := Self;
       Checked := Chk;
-      inc(CompCount);
+      Inc(CompCount);
       Result := CompCount;
     end;
   end
@@ -3149,8 +3202,8 @@ begin
     Result := 0;
 end;
 
-function TRichEditWB.AddButton(bCaption, bName: string; reLeft, bLeft, bTop:
-  Integer): Integer;
+function TRichEditWB.AddButton(bCaption, bName: string;
+  reLeft, bLeft, bTop: Integer): Integer;
 var
   B: TButton;
 begin
@@ -3165,7 +3218,7 @@ begin
       Left := bLeft;
       Top := bTop;
       Parent := Self;
-      inc(CompCount);
+      Inc(CompCount);
       Result := CompCount;
     end;
   end
@@ -3173,14 +3226,14 @@ begin
     Result := 0;
 end;
 
-procedure TRichEditWB.SetModified(Value: Boolean);
+procedure TRichEditWB.SetModified(Value: boolean);
 begin
   inherited Modified;
   UpdateInfo;
- // if Assigned(FStatusbar) then
+  // if Assigned(FStatusbar) then
   begin
-     //FStatusbar.Panels[0].Width := 2000;
-   //  FStatusbar.Panels[0].Text  := Hint;
+    // FStatusbar.Panels[0].Width := 2000;
+    // FStatusbar.Panels[0].Text  := Hint;
   end;
 end;
 
@@ -3201,13 +3254,11 @@ begin
     sMod := 'Modified'
   else
     sMod := '';
-  Hint := 'File Name: ' + fFileName + '. | ' +
-    #10 + #13 + 'Position: ' + Format(sColRowInfo, [CharPos.Y, CharPos.X]) + '. | ' +
-    #10 + #13 + sMod + '. | ' +
-    #10 + #13 + CapsLockKey + '. | ' +
-    #10 + #13 + NumLockKey + '. | ' +
-    #10 + #13 + InsertKey + '. | ' +
-    #10 + #13 + 'Total Lines Count: ' + IntToStr(GetLineCount) + '. |';
+  Hint := 'File Name: ' + FFileName + '. | ' + #10 + #13 + 'Position: ' +
+    Format(sColRowInfo, [CharPos.Y, CharPos.X]) + '. | ' + #10 + #13 + sMod +
+    '. | ' + #10 + #13 + CapsLockKey + '. | ' + #10 + #13 + NumLockKey + '. | '
+    + #10 + #13 + InsertKey + '. | ' + #10 + #13 + 'Total Lines Count: ' +
+    IntToStr(GetLineCount) + '. |';
   CursorPositionX := CharPos.X;
   CursorPositionY := CharPos.Y;
 end;
@@ -3248,7 +3299,7 @@ begin
     begin
       ReadOnly := ofReadOnly in OD.Options;
       PerformFileOpen(OD.FileName);
-      Setfilename(OD.FileName);
+      SetFileName(OD.FileName);
       UpdateInfo;
     end;
   finally
@@ -3278,7 +3329,7 @@ end;
 
 procedure TRichEditWB.Save;
 var
-  i: Integer;
+  I: Integer;
 begin
   if FFileName = sUntitled then
   begin
@@ -3289,11 +3340,13 @@ begin
   begin
     if FileExists(Trim(FFileName + '.html')) then
     begin
-      i := MessageDlg(Format(sOverWrite, [Trim(FFileName + '.html')]), mtConfirmation,
-        mbYesNoCancel, 0);
-      if i = mrCancel then Exit;
-      if i = mrNo then SaveAs;
-      if i = mrYes then
+      I := MessageDlg(Format(sOverWrite, [Trim(FFileName + '.html')]),
+        mtConfirmation, mbYesNoCancel, 0);
+      if I = mrCancel then
+        Exit;
+      if I = mrNo then
+        SaveAs;
+      if I = mrYes then
       begin
         Lines.SaveToFile(Trim(FFileName + '.html'));
         Modified := False;
@@ -3313,14 +3366,15 @@ var
 begin
   sd := TSaveDialog.Create(Self);
   try
-    SD.FileName := (Trim(FFileName + '.html'));
-    if SD.Execute then
+    sd.FileName := (Trim(FFileName + '.html'));
+    if sd.Execute then
     begin
-      if FileExists(Trim(SD.FileName + '.html')) then
-        if MessageDlg(Format(sOverWrite, [(Trim(SD.FileName + '.html'))]), mtConfirmation, mbYesNoCancel, 0)
-        <> idYes then Exit;
-      Lines.SaveToFile(SD.FileName + '.html');
-      SetFileName(SD.FileName);
+      if FileExists(Trim(sd.FileName + '.html')) then
+        if MessageDlg(Format(sOverWrite, [(Trim(sd.FileName + '.html'))]),
+          mtConfirmation, mbYesNoCancel, 0) <> idYes then
+          Exit;
+      Lines.SaveToFile(sd.FileName + '.html');
+      SetFileName(sd.FileName);
       Modified := False;
       SetModified(False);
     end;
@@ -3331,7 +3385,7 @@ end;
 
 procedure TRichEditWB.SetFileName(const FileName: string);
 begin
-  fFileName := FileName;
+  FFileName := FileName;
 end;
 
 procedure TRichEditWB.CheckFileSave;
@@ -3340,18 +3394,21 @@ var
 begin
   if not Modified then
     Exit;
-  SaveResp := MessageDlg(Format(sSaveChanges, [FFileName]),
-    mtConfirmation, mbYesNoCancel, 0);
+  SaveResp := MessageDlg(Format(sSaveChanges, [FFileName]), mtConfirmation,
+    mbYesNoCancel, 0);
   case SaveResp of
-    idYes: Save;
-    idNo: {Nothing};
-    idCancel: Abort;
+    idYes:
+      Save;
+    idNo: { Nothing }
+      ;
+    idCancel:
+      Abort;
   end;
 end;
 
 procedure TRichEditWB.WMDropFiles(var Msg: TWMDropFiles);
 var
-  CFileName: array[0..MAX_PATH] of Char;
+  CFileName: array [0 .. MAX_PATH] of Char;
 begin
   if AcceptDragFiles then
   begin
@@ -3371,6 +3428,8 @@ end;
 initialization
 
 finalization
-  if FRichEditModule <> 0 then
-    FreeLibrary(FRichEditModule);
+
+if FRichEditModule <> 0 then
+  FreeLibrary(FRichEditModule);
+
 end.
